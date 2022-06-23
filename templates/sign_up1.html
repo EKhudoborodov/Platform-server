@@ -2,23 +2,26 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Login</title>
+    <title>Sign up</title>
 </head>
 <body>
-	<a href="http://127.0.0.1:5000/signup">Sign up</a>
     <form action="" method="post">
-        <p>
+    <p>
 	    <label for="username">Username</label>
 	    <input type="text" name="username">
 	</p>
 	<p>
-	    <label for="password">Password</label>
-	    <input type="password" name="password">
+	    <label for="password1">Password</label>
+	    <input type="password1" name="password1">
+	</p>
+	<p>
+	    <label for="password2">Confirm Password</label>
+	    <input type="password2" name="password2">
 	</p>
 	<p>
 	    <input type="submit">
 	</p>
-		<div>There is no such user in database! Please, enter correct login and password!</div>
+		<div>Username field can't be empty!</div>
     </form>
 
 </body>
