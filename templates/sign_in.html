@@ -17,7 +17,14 @@
 	</p>
 	<p>
 	    <input type="submit">
+	</p>
+	
+		{% if username == None or username == "" or password == None or password == "" %} 
+		Please enter your login and password!
+		{% elif no_user == 1 %}
+		There is no such user in database! Please, enter correct login and password!
+		{% endif %} 
     </form>
-
+	
 </body>
 </html>

@@ -6,6 +6,10 @@
 </head>
 <body>
     <form action="" method="post">
+	<p>
+		<label for="fullname">Fullname</label>
+	    <input type="text" name="fullname">
+	</p>
     <p>
 	    <label for="username">Username</label>
 	    <input type="text" name="username">
@@ -20,6 +24,20 @@
 	</p>
 	<p>
 	    <input type="submit">
+	</p>
+		
+		{% if fullname == None or fullname == "" %}
+		Fullname field can't be empty!
+		{% elif username == None or username == "" %}
+		Username field can't be empty!
+		{% elif user_exist == 1 %}
+		This username is already taken.
+		{% elif password1 == None or password1 == "" or password2 == None or password2 == "" %}
+		Password fields can't be empty!
+		{% elif defferent == 1 %}
+		Passwords are different.
+		
+		{% endif %}
     </form>
 
 </body>
