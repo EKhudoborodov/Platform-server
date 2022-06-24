@@ -12,7 +12,7 @@ conn = psycopg2.connect(database="server_db",
 cursor = conn.cursor()
 
 @app.route('/signin/', methods=['GET'])
-def index():
+def sign_in_start():
     return render_template('sign_in.html', username=0, password=0)
 
 @app.route('/signin/', methods=['POST'])
@@ -24,15 +24,16 @@ def signin():
         cursor.execute(f"SELECT * FROM public.users WHERE login='{username}' AND password='{password}'", (str(username), str(password)))
         records = list(cursor.fetchall())
         if records != []:
-            session['login'] = username
-            return redirect(url_for('.home', username=username))
+            session['fullname'] = records[0][3] 
+            session['user_id'] = records[0][0]
+            return redirect(url_for('.home', fullname=records[0][3], user_id=records[0][0]))
         else:
             return render_template('sign_in.html', username=username, password=password, no_user=1)
     else:
         return render_template('sign_in.html', username=username, password=password)
         
 @app.route('/signup/', methods=['GET'])
-def first():
+def sign_up_start():
     return render_template('sign_up.html', fullname = 0, username = 0, password1 = 0, password2 = 0)
 
 @app.route('/signup/', methods=['POST'])
@@ -50,6 +51,10 @@ def signup():
                     if password1 == password2:
                         cursor.execute(f"INSERT INTO public.users (login, password, fullname, banned) VALUES ('{username}', '{password1}', '{fullname}', {False})")
                         conn.commit()
+                        cursor.execute(f"SELECT * FROM public.users WHERE login='{username}'", (str(username)))
+                        records = list(cursor.fetchall())
+                        cursor.execute(f"INSERT INTO public.role_user (user_id, role_id) VALUES ('{records[0][0]}', 4)")
+                        conn.commit()
                         return redirect('http://127.0.0.1:5000/signin')
                     else:
                         return render_template('sign_up.html', fullname=fullname, username=username, password1=password1, password2=password2, defferent=1)
@@ -64,11 +69,62 @@ def signup():
 
 @app.route("/home/", methods=['GET', 'POST'])
 def home():
-    username = session.get('login')
-    if username != None:
-        return render_template('approved.html', login=f"Your login:{username}")
+    fullname = session.get('fullname')
+    user_id = session.get('user_id')
+    if fullname != None:
+        if(user_id == 1):
+            return render_template('home.html', fullname=fullname, admin = 1)
+        else:
+            return render_template('home.html', fullname=fullname, admin = 0)
     else: 
         return redirect('http://127.0.0.1:5000/signin')
+        
+@app.route("/role/", methods=['GET'])
+def role_start():
+    return render_template('role.html')
+    
+@app.route("/role/", methods=['POST'])
+def update_role():
+    username = request.form.get('username')
+    role = request.form.get('role')
+    action = request.form.get('action')
+    if username != "":
+        cursor.execute(f"SELECT * FROM public.users WHERE login='{username}'")
+        records = list(cursor.fetchall())
+        if records != []:
+            user_id = records[0][0]
+            cursor.execute(f"SELECT * FROM public.role_user WHERE user_id={user_id}")
+            records = list(cursor.fetchall())
+            if role=='reader':
+                role_id = 4
+            elif role=='writer':
+                role_id = 3
+            elif role=='moderator':
+                role_id = 2
+            else:
+                role_id = 5
+            if role_id == records[0][1]:
+                return render_template('role.html', username=username, no_edits=1)
+            else:
+                if role_id != 5:
+                    if action == 'update':
+                        cursor.execute(f"UPDATE public.role_user SET role_id={role_id} WHERE user_id={user_id}")
+                        conn.commit()
+                        return render_template('role.html', username=username, update=1)
+                    else:
+                        cursor.execute(f"INSERT INTO public.role_user (user_id, role_id) VALUES ({user_id}, {role_id})")
+                        conn.commit()
+                        return render_template('role.html', username=username, new=1)
+                else:
+                    cursor.execute(f"UPDATE public.role_user SET role_id={role_id} WHERE user_id={user_id}")
+                    cursor.execute(f"UPDATE public.users SET banned={True} WHERE user_id={user_id}")
+                    conn.commit()
+                    return render_template('role.html', username=username, ban=1)
+                    
+        else:
+            return render_template('role.html', username=username, no_user=1)
+    else:
+        return render_template('role.html', username=username)
 
 if __name__ == '__main__':
     app.secret_key = os.urandom(24)

@@ -4,10 +4,12 @@
     <meta charset="UTF-8">
     <title>Platform</title>
     <form action="" method="post">
-        {% if login %}
-        <p>{{login}}</p>
-        {% endif %}
+        <p>
+		{% if admin == 1 %}
+		<a href="http://127.0.0.1:5000/role">Role</a>
+		{% endif %}
 	</p>
+		<div>Hello, {{fullname}}!</div>
 
     </form>
 </head>
