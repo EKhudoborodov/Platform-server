@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <title>Home</title>
+        <title>Workshop</title>
         <style>
             ul.nav{
                 margin-left: 0px;
@@ -26,6 +26,7 @@
         </style>
     </head>
     <body>
+		<p>
 		{% if ban == True %}
 		<h1>You are banned on the Server!</h1>
 		{% else %}
@@ -42,5 +43,10 @@
 		<a href="http://127.0.0.1:5000/signin">Log out</a>
 		{% endif %}
         </ul>
+		<a href="http://127.0.0.1:5000/create">Create new article</a>
+		{% if article == 1 %}
+		<a href="http://127.0.0.1:5000/create/{{article_name}}">{{article_name}}</a>
+		{% endif %}
+		</p>
     </body>
 </html>

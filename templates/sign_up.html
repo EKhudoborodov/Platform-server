@@ -27,13 +27,13 @@
 	    <input type="submit">
 	</p>
 		
-		{% if fullname == None or fullname == "" %}
+		{% if fullname == "" %}
 		Fullname field can't be empty!
-		{% elif username == None or username == "" %}
+		{% elif username == "" %}
 		Username field can't be empty!
 		{% elif user_exist == 1 %}
 		This username is already taken.
-		{% elif password1 == None or password1 == "" or password2 == None or password2 == "" %}
+		{% elif password1 == "" or password2 == "" %}
 		Password fields can't be empty!
 		{% elif defferent == 1 %}
 		Passwords are different.

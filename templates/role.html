@@ -2,39 +2,43 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Platform</title>
+    <title>Role manager</title>
     <form action="" method="post">
+	<p>
+	<a href="http://127.0.0.1:5000/home">Back</a>
+	</p>
     <p>
 		<label for="username">Username</label>
 	    <input type="text" name="username">
 	</p>
 	<p>
 		<select id="role" name="role">
-                    <option value="reader">Reader</option>
                     <option value="writer">Writer</option>
                     <option value="moderator">Moderator</option>
                     <option value="ban">Ban user</option>
                 </select>
 		<select id="action" name="action">
-                    <option value="update">Update</option>
+                    <option value="remove">Remove</option>
                     <option value="new_role">New role</option>
                 </select>
 	</p>
 	<p>
 	    <input type="submit">
 	</p>
-		{% if username == None or username == "" %}
+		{% if username == "" %}
 		Username field can't be empty.
 		{% elif no_user == 1 %}
 		There is no such user in database.
 		{% elif no_edits == 1 %}
 		This user already has this role.
 		{% elif update == 1 %}
-		<p>{{username}}'s role is updated.</p>
+		<p>{{username}}'s role is deteleted.</p>
 		{% elif new == 1 %}
 		<p>New role is added to {{username}}.</p>
 		{% elif ban == 1 %}
 		<p>{{username}} is banned.</p>
+		{% elif ban == 0 %}
+		<p>{{username}} is removed from ban list.</p>
 		{% endif %}
 
     </form>

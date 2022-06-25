@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <title>Home</title>
+        <title>Create</title>
         <style>
             ul.nav{
                 margin-left: 0px;
@@ -26,6 +26,7 @@
         </style>
     </head>
     <body>
+		<p>
 		{% if ban == True %}
 		<h1>You are banned on the Server!</h1>
 		{% else %}
@@ -42,5 +43,24 @@
 		<a href="http://127.0.0.1:5000/signin">Log out</a>
 		{% endif %}
         </ul>
+		</p>
+		
+		<form action="" method="post">
+			<p>
+				<textarea name="article_text" rows="10" cols="40" placeholder="Write article text" style="font-size: 14pt;"></textarea>
+				<input type="submit" name="Save" value="save">
+			</p>
+			<p>
+				<input type="submit" name="Piblish" value="publish">
+			</p>
+		</form>
+		<p>
+			{% if save == 1 %}
+			Article is saved.
+			{% elif publish == 1 %}
+			Article is published. Waiting for moderator to aproove.
+			{% endif %}
+		</p>
+		<a href="http://127.0.0.1:5000/workshop">Back</a>
     </body>
 </html>
