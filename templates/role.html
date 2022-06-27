@@ -1,16 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Role manager</title>
-    <form action="" method="post">
-	<p>
-	<a href="http://127.0.0.1:5000/home">Back</a>
-	</p>
-    <p>
-		<label for="username">Username</label>
-	    <input type="text" name="username">
-	</p>
+	<head>
+		<meta charset="UTF-8">
+		<title>Role manager</title>
+		<style>
+            ul.nav{
+                margin-left: 0px;
+                padding-left: 0px;
+                list-style: none;
+            }
+            ul.nav a {
+                display: block;
+                width: 7em;
+                padding:10px;
+                background-color: #f4f4f4;
+                border-top: 1px dashed #333;
+                border-right: 1px dashed #333;
+                border-left: 5px solid #333;
+                text-decoration: none;
+                color: #333;
+            }
+            ul.nav li:last-child a {
+                border-botom: 1px dashed #333;
+            }
+        </style>
+		<ul class="nav">
+		<a href="http://127.0.0.1:5000/home">Home</a>
+        {% if a == 1 %}
+		<a href="http://127.0.0.1:5000/role">Role</a>
+		{% endif %}
+		{% if w == 1 or a == 1 %}
+		<a href="http://127.0.0.1:5000/workshop">Write article</a>
+		{% endif %}
+		{% if m == 1 or a == 1 %}
+		<a href="http://127.0.0.1:5000/published">Published articles{{new_publish}}</a>
+		{% endif %}
+		<a href="http://127.0.0.1:5000/signin">Log out</a>
+		{% endif %}
+        </ul>
+		
+</head>
+<body>
+	<form action="" method="post">
+		<p>
+			<label for="username">Username</label>
+			<input type="text" name="username">
+		</p>
 	<p>
 		<select id="role" name="role">
                     <option value="writer">Writer</option>
@@ -42,8 +77,5 @@
 		{% endif %}
 
     </form>
-</head>
-<body>
-
 </body>
 </html>
