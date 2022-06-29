@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
-	<head>
-		<meta charset="UTF-8">
-		<title>Role manager</title>
-		<style>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Home</title>
+        <style>
             ul.nav{
                 margin-left: 0px;
                 padding-left: 0px;
@@ -21,13 +21,15 @@
                 color: #333;
             }
             ul.nav li:last-child a {
-                border-botom: 1px dashed #333;
+                border-bottom: 1px dashed #333;
             }
         </style>
+    </head>
+    <body>
 		{% if ban == True %}
 		<h1>You are banned on the Server!</h1>
 		{% else %}
-		<ul class="nav">
+        <ul class="nav">
 		<a href="http://127.0.0.1:5000/home">Home</a>
         {% if a == 1 %}
 		<a href="http://127.0.0.1:5000/role">Role</a>
@@ -41,44 +43,26 @@
 		<a href="http://127.0.0.1:5000/signin">Log out</a>
 		{% endif %}
         </ul>
-		
-</head>
-<body>
-	<form action="" method="post">
+		<form action="" method="post">
 		<p>
-			<label for="username">Username</label>
-			<input type="text" name="username">
+			<label for="editor">Write username of new editor:</label>
+			<input type="text" name="editor">
 		</p>
-	<p>
 		<select id="role" name="role">
-                    <option value="writer">Writer</option>
-                    <option value="moderator">Moderator</option>
-                    <option value="ban">Ban user</option>
+                    <option value="author">Author</option>
+                    <option value="redactor">Redactor</option>
                 </select>
-		<select id="action" name="action">
-                    <option value="remove">Remove</option>
-                    <option value="new_role">New role</option>
-                </select>
-	</p>
-	<p>
-	    <input type="submit">
-	</p>
-		{% if username == "" %}
-		Username field can't be empty.
-		{% elif no_user == 1 %}
-		There is no such user in database.
-		{% elif no_edits == 1 %}
-		This user already has this role.
-		{% elif update == 1 %}
-		<p>{{username}}'s role is deteleted.</p>
-		{% elif new == 1 %}
-		<p>New role is added to {{username}}.</p>
-		{% elif banned == 1 %}
-		<p>{{username}} is banned.</p>
-		{% elif banned == 0 %}
-		<p>{{username}} is removed from ban list.</p>
+		<p>
+			<input type="submit">
+		</p>
+		</form>
+		
+		{% if no_user == 1 %}
+		There is no such user.
+		{% elif redactor == 1 %}
+		{{username}} is now a new author of this article.
+		{% elif author == 1 %}
+		{{username}} is now a new redactor of this article.
 		{% endif %}
-
-    </form>
-</body>
+    </body>
 </html>

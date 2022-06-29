@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <title>Workshop</title>
+        <title>Home</title>
         <style>
             ul.nav{
                 margin-left: 0px;
@@ -26,7 +26,6 @@
         </style>
     </head>
     <body>
-		<p>
 		{% if ban == True %}
 		<h1>You are banned on the Server!</h1>
 		{% else %}
@@ -44,28 +43,5 @@
 		<a href="http://127.0.0.1:5000/signin">Log out</a>
 		{% endif %}
         </ul>
-		<p><a href="http://127.0.0.1:5000/create">Create new article</a></p>
-		<p>Last updated articles</p>
-		{% if first %}
-		<p><a href="http://127.0.0.1:5000/create/{{first}}">{{first}}</a></p>
-		{% endif %}
-		{% if second %}
-		<p><a href="http://127.0.0.1:5000/create/{{second}}">{{second}}</a></p>
-		{% endif %}
-		{% if third %}
-		<p><a href="http://127.0.0.1:5000/create/{{third}}">{{third}}</a></p>
-		{% endif %}
-		    <form action="" method="post">
-        <p>
-			<label for="article_name">Write your article's name:</label>
-			<input type="text" name="article_name">
-		</p>
-		<p>
-			<input type="submit" name="Find">
-		</p>
-		{% if no_article == 1 %}
-		You have no article with that name.
-		{% endif %}
-		</p>
     </body>
 </html>

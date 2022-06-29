@@ -47,10 +47,30 @@
 		</p>
 		{% if no_article == 1 %}
 		There is no such article. You can create it <a href="http://127.0.0.1:5000/create">here</a>
+		{% elif publish == 1 %}
+		<p><h3>{{title}}</h3></p>
+		<p><textarea readonly rows="10" cols="40" style="font-size: 14pt;">{{text}}</textarea></p>
+		Article is published. Waiting for moderator to aproove.
+		{% elif aprooved == 1 %}
+		<p><h3>{{title}}</h3></p>
+		<p><textarea readonly rows="10" cols="40" style="font-size: 14pt;">{{text}}</textarea></p>
+		Article is aprooved.
+		{% if author == 1 %}
+		<p><input type="submit" name="Rewrite article" value="rewrite"></p>
+		{% endif %}
+		{% elif denied == 1 %}
+		<p><h3>{{title}}</h3></p>
+		<p><textarea readonly rows="10" cols="40" style="font-size: 14pt;">{{text}}</textarea></p>
+		Article is denied. {{reason}}
+		{% if author == 1 %}
+		<p><input type="submit" name="Rewrite article" value="rewrite"></p>
+		{% endif %}
+		{% elif deleted == 1 %}
+		Article is deleted. <a href="http://127.0.0.1:5000/create">Create new article</a>
 		{% else %}
 		<form action="" method="post">
 			<p>
-				<input type="text" name="title" placeholder={{title}}>
+				<textarea name="title" rows="1" cols="40" style="font-size: 18pt;">{{title}}</textarea>
 			</p>
 			<p>
 			{% if text == None %}
@@ -60,17 +80,19 @@
 			{% endif %}
 				<input type="submit" name="Save" value="save">
 			</p>
-			<p>
-				<input type="submit" name="Piblish" value="publish">
-			</p>
+			{% if author == 1 %}
+			<p><input type="submit" name="Editors" value="edit"></p>
+			<p><input type="submit" name="Piblish" value="publish"></p>
+			{% endif %}
 		</form>
 		<p>
 			{% if save == 1 %}
 			Article is saved.
-			{% elif publish == 1 %}
-			Article is published. Waiting for moderator to aproove.
 			{% endif %}
 		</p>
+		{% if author == 1 %}
+		<p><input type="submit" name="Delete" value="delete"></p>
+		{% endif %}
 		{% endif %}
 		
     </body>
