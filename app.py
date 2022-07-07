@@ -1,4 +1,4 @@
-import requests, os, psycopg2, functional, json
+import requests, os, psycopg2, functional, json, datetime
 from flask import Flask, render_template, request, redirect, url_for, session
 
 app = Flask(__name__)
@@ -185,7 +185,6 @@ def create():
         conn.commit()
         cursor.execute(f"SELECT * FROM public.article WHERE name='{article}'")
         records = list(cursor.fetchall())
-        session['article_id'] = records[0][0]
         cursor.execute(f"INSERT INTO public.article_status (article_id, status_id) VALUES ({records[0][0]}, 1)")
         cursor.execute(f"INSERT INTO public.article_writer (article_id, user_id, isauthor) VALUES ({records[0][0]}, {user_id}, {True})")
         cursor.execute(f"INSERT INTO public.article_topic (article_id, topic_id) VALUES ({records[0][0]}, {topic_id})")
@@ -301,13 +300,40 @@ def a_published(article_name):
 def render_article(article_name):
     return functional.authorization_check_article(article_name)
 
+@app.route("/<article_name>", methods=['POST'])
+def save_review(article_name):
+    rate = request.form.get('rate')
+    review = request.form.get('review')
+    user_id = session.get('user')
+    action = request.form.get('send')
+    path = f".\\reviews\\{article_name}.txt"
+    with open(path, "r") as file:
+        lines = file.readlines()
+    file.close()
+    lines += f"{user_id}:{review}\n"
+    text = functional.form_article(lines)
+    with open(path, "w") as file:
+        file.write(text)
+    file.close()
+    cursor.execute(f"SELECT * FROM public.article WHERE name='{article_name}'")
+    records = list(cursor.fetchall())
+    article_id = records[0][0]
+    time = str(datetime.datetime.now())
+    time = time[0:10]
+    cursor.execute(f"INSERT INTO public.rating (user_id, article_id, date, rate, isdeleted) VALUES ({user_id}, {article_id}, {time}, {rate}, {False})")
+    conn.commit()
+    return functional.authorization_check_article(article_name)
+
 
 @app.route("/data/", methods=['GET'])
 def get_home_data():
     home_array = functional.select_table_desc()
     published_array = functional.select_table_published()
     personal_array = functional.select_table_personal()
-    #print(personal_array)
+    article_id = session.get('article_id')
+    if article_id != None:
+        reviews_array = functional.select_reviews()
+        return {'home': home_array, 'published': published_array, 'personal': personal_array, 'reviews': reviews_array}
     return {'home': home_array, 'published': published_array, 'personal': personal_array}
     
 

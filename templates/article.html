@@ -73,14 +73,14 @@
 					<textarea readonly rows="25" cols="100" style="font-size: 14pt;">{{text}}</textarea>
 				</p>
 				<p>Reviews: {{rate}}</p>
-				{% if your_review or your_rate %}
+				{% if user_review or user_rate %}
 					<p>
-						{{user_rate}}:{{user_review}}
+						Your review: {{user_rate}}:{{user_review}}
 					</p>
 				{% else %}
 					<form action="" method="post">
 						<p>
-							<select id="review" name="review">
+							<select id="rate" name="rate">
 								<option value="5">5<option>
 								<option value="4">4<option>
 								<option value="3">3<option>
@@ -89,7 +89,7 @@
 							<select>
 						</p>
 					<p>
-							<textarea rows="3" cols="60" style="font-size: 12pt;" placeholder="Write your review"></textarea>
+							<textarea name="review" rows="3" cols="60" style="font-size: 12pt;" placeholder="Write your review"></textarea>
 						</p>
 						<p>
 							<input type="submit" name="send" value="send">
@@ -118,9 +118,7 @@
 						for (var i = 0; i < data.length; i++){
 							var row = `<div>
 											<p>
-												<b>${data[i].author}:</b>
-												${data[i].username}
-												${data[i].rate}
+												<b>${data[i].author}</b>|${data[i].username}(${data[i].rate}):
 											</p><p>
 												${data[i].comment}
 											</p>

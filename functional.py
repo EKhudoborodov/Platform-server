@@ -1,4 +1,4 @@
-import requests, psycopg2, cv2
+import requests, psycopg2, cv2, datetime
 import flask
 
 conn = psycopg2.connect(database="server_db",
@@ -116,7 +116,6 @@ def authorization_check_draft(article):
         if records == []:
             return flask.render_template('draft.html', no_article = 1)
         else:
-            flask.session['article_id'] = records[0][0]
             title = records[0][2]
             reason = records[0][3]
             cursor.execute(f"SELECT * FROM public.article_writer WHERE article_id={records[0][0]} and user_id={flask.session.get('user')}")
@@ -154,6 +153,7 @@ def authorization_check_article(article_name):
         else:
             user_id = flask.session.get('user')
             article_id = records[0][0]
+            flask.session['article_id'] = article_id
             cursor.execute(f"SELECT * FROM public.article_status WHERE article_id={article_id}")
             check = list(cursor.fetchall())
             status_id = check[0][1]
@@ -202,17 +202,17 @@ def review_check(user_id, article_id, article_name):
         with open(path, "r") as text_file:
             lines = text_file.readlines()
         text_file.close()
-        formed_id = str(article_id)
+        formed_id = str(user_id)
         for line in lines:
             wrong = 1
-            for i in range(1, len(formed_id)+1):
+            for i in range(len(formed_id)):
                 if line[i] == formed_id[i-1]:
                     wrong = 0
                 else:
                     wrong = 1
                     break
             if wrong == 0:
-                review = line[len(formed_id)+3:]
+                review = line[len(formed_id)+1:]
                 review = review[0:len(review)-2]
                 break
         return [rate, review]
@@ -266,6 +266,7 @@ def form_article(lines):
     if lines == []:
         return None
     else:
+        check = 1
         new_lines = ""
         for line in lines:
             if line != "\n" or check == 1:
@@ -315,7 +316,7 @@ def build_html(direction):
     file.close()
     return 0
 """
-
+#GET
 def get_topic(article_id):
     cursor.execute(f"SELECT * FROM public.article_topic WHERE article_id={article_id}")
     article_desc = list(cursor.fetchall())
@@ -336,6 +337,8 @@ def get_rating(article_id):
         reviews='-'
     return reviews
 
+
+#SELECT
 def select_table_desc():
     cursor.execute(f"SELECT * FROM public.article WHERE isdeleted={False}")
     records = list(cursor.fetchall())
@@ -404,12 +407,51 @@ def select_table_personal():
         array += {'name': name, 'author': authors, 'topic': topic, 'reviews': reviews},
     return array
 
+def select_reviews():
+    #author, username, rate, review
+    user_id = flask.session.get('user')
+    article_id = flask.session.get('article_id')
+    array = []
+    cursor.execute(f"SELECT * FROM public.article WHERE id={article_id}")
+    records = list(cursor.fetchall())
+    if records != []:
+        article_name = records[0][1]
+        path = f".\\reviews\\{article_name}.txt"
+        with open(path, "r") as text_file:
+            lines = text_file.readlines()
+        text_file.close()
+        for line in lines:
+            author_id = ""
+            for i in range(len(line)):
+                if line[i] == ':':
+                    start = i
+                    break
+                else:
+                    author_id += line[i]
+            if author_id == user_id:
+                continue
+            else:
+                review = line[start+1:]
+                cursor.execute(f"SELECT * FROM public.users WHERE id={author_id}")
+                author_desc = list(cursor.fetchall())
+                username = author_desc[0][1]
+                author = author_desc[0][3]
+                cursor.execute(f"SELECT * FROM public.rating WHERE user_id={author_id} and article_id={article_id}")
+                rating_desc = list(cursor.fetchall())
+                rate = rating_desc[0][4]
+                array += {'author': author, 'username': username, 'rate': rate, 'review': review},
+    return array
 
+if __name__ == '__main__':
+    print(review_check(1, 2, 'test1'))
 
 
 """  
 TESTS
 if __name__ == '__main__':
+    time = str(datetime.datetime.now())
+    time = time[0:10]
+    print(time)
     array = select_table_desc()
     print(array)
     conn = psycopg2.connect(database="server_db",
