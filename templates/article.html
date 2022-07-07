@@ -53,6 +53,12 @@
 				There is no such article. You can create it <a href="http://127.0.0.1:5000/create">here</a>
 			{% elif no_article == 1 %}
 				There is no such article.
+			{% elif not_published == 1 %}
+				Author of this article is stil worling on it. Waiting for him to publish.
+			{% elif not_aprooved == 1%}
+				This article is published. Waiting for moderator to aproove it.
+			{% elif denied == 1%}
+				Moderator rejected publishing this article. Reason of rejection: {{reason}}
 			{% else %}
 				<p>
 					<h1>{{title}}</h1>
@@ -66,10 +72,10 @@
 				<p>
 					<textarea readonly rows="25" cols="100" style="font-size: 14pt;">{{text}}</textarea>
 				</p>
-				<p>Reviews: {{article_rate}}</p>
+				<p>Reviews: {{rate}}</p>
 				{% if your_review or your_rate %}
 					<p>
-						{{your_rate}}:{{your_review}}
+						{{user_rate}}:{{user_review}}
 					</p>
 				{% else %}
 					<form action="" method="post">
@@ -83,7 +89,7 @@
 							<select>
 						</p>
 					<p>
-							<textarea rows="3" cols="60" style="font-size: 12pt;" placeholder="Write your review"><textarea>
+							<textarea rows="3" cols="60" style="font-size: 12pt;" placeholder="Write your review"></textarea>
 						</p>
 						<p>
 							<input type="submit" name="send" value="send">
@@ -97,7 +103,15 @@
 				<script>
 					var myArray = [
 					]
-					buildTable(myArray)
+					$.ajax({
+						method:'GET',
+						url:'http://127.0.0.1:5000/data',
+						success:function(response){
+							myArray = response.reviews
+							buildTable(myArray)
+							console.log(myArray)
+						}
+					})
 					function buildTable(data){
 						var reviews = document.getElementById('Reviews')
 						reviews.innerHTML = ''

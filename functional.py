@@ -9,6 +9,7 @@ conn = psycopg2.connect(database="server_db",
 
 cursor = conn.cursor()
 
+#FOR SIGN IN AND SIGN UP
 def stop_sessions():
     flask.session['user'] = None
     flask.session['fullname'] = None
@@ -47,6 +48,7 @@ def select_role(roles):
             res[3]=1
     return res
 
+#CHECK
 def authorization_check(validate_role, direction):
     ban = flask.session.get('ban')
     user_roles = flask.session.get('role')
@@ -103,6 +105,41 @@ def authorization_check_published(article_name):
     else:
         return flask.redirect(flask.url_for('.home'))
 
+def authorization_check_draft(article):
+    roles = flask.session.get('role')
+    ban = flask.session.get('ban')
+    if roles == None:
+        return flask.redirect(flask.url_for('.sign_in_start'))
+    elif roles[0] == 1 or roles[2] == 1:
+        cursor.execute(f"SELECT * FROM public.article WHERE name='{article}'")
+        records = list(cursor.fetchall())
+        if records == []:
+            return flask.render_template('draft.html', no_article = 1)
+        else:
+            flask.session['article_id'] = records[0][0]
+            title = records[0][2]
+            reason = records[0][3]
+            cursor.execute(f"SELECT * FROM public.article_writer WHERE article_id={records[0][0]} and user_id={flask.session.get('user')}")
+            recs = list(cursor.fetchall())
+            if recs == []:
+                return flask.redirect(flask.url_for('.workshop'))
+            author = is_author(records[0][0], flask.session.get('user'))
+            path = f".\\articles\\{article}.txt"
+            text = form_text(path)
+            new_publish = f"({check_writer_uploads()})"
+            cursor.execute(f"SELECT * FROM public.article_status WHERE article_id='{records[0][0]}'")
+            records = list(cursor.fetchall())
+            if records[0][1] == 1:
+                return flask.render_template('draft.html', ban=ban, a=roles[0], m=roles[1], w=roles[2], new_publish=new_publish, text=text, title=title, author=author)
+            elif records[0][1] == 2:
+                return flask.render_template('draft.html', ban=ban, a=roles[0], m=roles[1], w=roles[2], new_publish=new_publish, text=text, title=title, author=author, publish=1)
+            elif records[0][1] == 3:
+                return flask.render_template('draft.html', ban=ban, a=roles[0], m=roles[1], w=roles[2], new_publish=new_publish, text=text, title=title, author=author, aprooved=1)
+            else:
+                return flask.render_template('draft.html', ban=ban, a=roles[0], m=roles[1], w=roles[2], new_publish=new_publish, text=text, title=title, author=author, reason=reason, denied=1)
+    else:
+        return flask.redirect(flask.url_for('.home'))
+
 def authorization_check_article(article_name):
     ban = flask.session.get('ban')
     user_roles = flask.session.get('role')
@@ -110,19 +147,42 @@ def authorization_check_article(article_name):
         return flask.redirect(flask.url_for('.sign_in_start'))
     else:
         new_publish = f"({check_writer_uploads()})"
-        cursor.execute(f"SELECT * FROM public.article WHERE name='{article_name}' and isdeleted = {False}")
+        cursor.execute(f"SELECT * FROM public.article WHERE name='{article_name}' and isdeleted = {False} ")
         records = list(cursor.fetchall())
         if records == []:
             return flask.render_template("article.html", a = user_roles[0], m = user_roles[1], w = user_roles[2], ban = ban, new_publish=new_publish, no_article=1)
         else:
+            user_id = flask.session.get('user')
             article_id = records[0][0]
-            title = records[0][2]
+            cursor.execute(f"SELECT * FROM public.article_status WHERE article_id={article_id}")
+            check = list(cursor.fetchall())
+            status_id = check[0][1]
+            if status_id != 3:
+                cursor.execute(f"SELECT * FROM public.article_writer WHERE article_id={article_id} and user_id={user_id}")
+                check = list(cursor.fetchall())
+                if check != []:
+                    return flask.redirect(flask.url_for('.draft_start'))
+                else:
+                    if status_id == 1:
+                        return flask.render_template("article.html", a = user_roles[0], m = user_roles[1], w = user_roles[2], ban = ban, new_publish=new_publish, not_published=1)
+                    elif status_id == 2:
+                        return flask.render_template("article.html", a = user_roles[0], m = user_roles[1], w = user_roles[2], ban = ban, new_publish=new_publish, not_aprooved=1)
+                    else:
+                        desc = records[0][3]
+                        return flask.render_template("article.html", a = user_roles[0], m = user_roles[1], w = user_roles[2], ban = ban, new_publish=new_publish, denied=1, reason=desc)
+            else:
+                #here must be tags
+                title = records[0][2]
+                path = f".\\articles\\{article_name}.txt"
+                text = form_text(path)
+                topic = get_topic(article_id)
+                rate = get_rating(article_id)
+                user_review=review_check(user_id, article_id, article_name)
+                return flask.render_template("article.html", a = user_roles[0], m = user_roles[1], w = user_roles[2], ban = ban, new_publish=new_publish, title=title, text=text, rate=rate, user_rate=user_review[0], user_review=user_review[1])
             #path = f".\\reviews\\{article_name}.txt"
             #reviews = form_text(path)
-            path = f".\\articles\\{article_name}.txt"
-            text = form_text(path)
-        return flask.render_template(f"article.html", a = user_roles[0], m = user_roles[1], w = user_roles[2], ban = ban, new_publish=new_publish, text=text, )
-
+            
+        
 def check_writer_uploads():
     cursor.execute(f"SELECT * FROM public.article_status WHERE status_id=2")
     records = list(cursor.fetchall())
@@ -131,47 +191,31 @@ def check_writer_uploads():
         res+=1
     return res
 
-def form_text(path):
-    check = 1
-    with open(path, "r") as text_file:
-        lines = text_file.readlines()
-    text_file.close()
-    if path[2:10] == 'articles':
-        return form_article(lines)
-    #else:
-        #return form_reviews(lines)
-
-def form_article(lines):
-    if lines == []:
-        return None
+def review_check(user_id, article_id, article_name):
+    cursor.execute(f"SELECT * FROM public.rating WHERE user_id={user_id} and article_id={article_id}")
+    records = list(cursor.fetchall())
+    if records == []:
+        return [None, None]
     else:
-        new_lines = ""
+        rate = records[0][4]
+        path = f".\\reviews\\{article_name}.txt"
+        with open(path, "r") as text_file:
+            lines = text_file.readlines()
+        text_file.close()
+        formed_id = str(article_id)
         for line in lines:
-            if line != "\n" or check == 1:
-                new_lines += line
-                check = 0
-            else:
-                check = 1
-        #print(new_lines)
-        return new_lines
-
-
-"""
-def form_reviews(article_id):
-    res = ""
-    cursor.execute(f"SELECT * FROM public.rating WHERE article_id={article_id} and isdeleted={False}")
-    rating = list(cursor.fetchall())
-    if rating == []:
-        return None
-    else:
-        for i in (len(rating)-1, 0, -1):
-            cursor.execute(f"SELECT * FROM public.users WHERE id={rating[i][1]} and isbanned={False}")
-            records = list(cursor.fetchall())
-            username = records[0][1]
-            fullname = records[0][3]
-"""     
-     
-
+            wrong = 1
+            for i in range(1, len(formed_id)+1):
+                if line[i] == formed_id[i-1]:
+                    wrong = 0
+                else:
+                    wrong = 1
+                    break
+            if wrong == 0:
+                review = line[len(formed_id)+3:]
+                review = review[0:len(review)-2]
+                break
+        return [rate, review]
 
 def is_author(article_id, user_id):
     cursor.execute(f"SELECT * FROM public.article_writer WHERE article_id='{article_id}' and user_id='{user_id}'")
@@ -207,7 +251,47 @@ def workshop_check(user_id, roles, no_article):
                 break
         return flask.render_template('workshop.html', ban=ban, a=roles[0], m=roles[1], w=roles[2], first=first, second=second, third=third, new_publish=new_publish, no_article=no_article)
 
+#FORM
+def form_text(path):
+    check = 1
+    with open(path, "r") as text_file:
+        lines = text_file.readlines()
+    text_file.close()
+    if path[2:10] == 'articles':
+        return form_article(lines)
+    #else:
+        #return form_reviews(lines)
+
+def form_article(lines):
+    if lines == []:
+        return None
+    else:
+        new_lines = ""
+        for line in lines:
+            if line != "\n" or check == 1:
+                new_lines += line
+                check = 0
+            else:
+                check = 1
+        #print(new_lines)
+        return new_lines
+
+
+
 """
+def form_reviews(article_id):
+    res = ""
+    cursor.execute(f"SELECT * FROM public.rating WHERE article_id={article_id} and isdeleted={False}")
+    rating = list(cursor.fetchall())
+    if rating == []:
+        return None
+    else:
+        for i in (len(rating)-1, 0, -1):
+            cursor.execute(f"SELECT * FROM public.users WHERE id={rating[i][1]} and isbanned={False}")
+            records = list(cursor.fetchall())
+            username = records[0][1]
+            fullname = records[0][3]
+
 def build_html(direction):
     path = f".\\templates\\{direction}.html"
     with open(path, "r") as text_file:
@@ -232,6 +316,26 @@ def build_html(direction):
     return 0
 """
 
+def get_topic(article_id):
+    cursor.execute(f"SELECT * FROM public.article_topic WHERE article_id={article_id}")
+    article_desc = list(cursor.fetchall())
+    cursor.execute(f"SELECT * FROM public.topic WHERE id={article_desc[0][1]}")
+    topic_desc = list(cursor.fetchall())
+    topic = topic_desc[0][1]
+    return topic
+
+def get_rating(article_id):
+    cursor.execute(f"SELECT * FROM public.rating WHERE article_id={article_id} and isdeleted={False}")
+    rating_desc = list(cursor.fetchall())
+    count = 0
+    for log in rating_desc:
+        count += log[4]
+    if count!=0:
+        reviews = count/len(rating_desc)
+    else:
+        reviews='-'
+    return reviews
+
 def select_table_desc():
     cursor.execute(f"SELECT * FROM public.article WHERE isdeleted={False}")
     records = list(cursor.fetchall())
@@ -250,20 +354,8 @@ def select_table_desc():
                 desc = list(cursor.fetchall())
                 authors += desc[0][3] + ", "
             authors=authors[0:len(authors)-2]
-            cursor.execute(f"SELECT * FROM public.article_topic WHERE article_id={article_id}")
-            article_desc = list(cursor.fetchall())
-            cursor.execute(f"SELECT * FROM public.topic WHERE id={article_desc[0][1]}")
-            topic_desc = list(cursor.fetchall())
-            topic = topic_desc[0][1]
-            cursor.execute(f"SELECT * FROM public.rating WHERE article_id={article_id} and isdeleted={False}")
-            rating_desc = list(cursor.fetchall())
-            count = 0
-            for log in rating_desc:
-                count += log[4]
-            if count!=0:
-                reviews = count/len(rating_desc)
-            else:
-                reviews='-'
+            topic = get_topic(article_id)
+            reviews = get_rating(article_id)
             array += {'name':name, 'author': authors, 'topic': topic, 'reviews': reviews},
     return array
 
@@ -284,11 +376,7 @@ def select_table_published():
             desc = list(cursor.fetchall())
             authors += desc[0][3] + ", "
         authors=authors[0:len(authors)-2]
-        cursor.execute(f"SELECT * FROM public.article_topic WHERE article_id={article_id}")
-        article_desc = list(cursor.fetchall())
-        cursor.execute(f"SELECT * FROM public.topic WHERE id={article_desc[0][1]}")
-        topic_desc = list(cursor.fetchall())
-        topic = topic_desc[0][1]
+        topic = get_topic(article_id)
         reviews = '-'
         array += {'name': name, 'author': authors, 'topic': topic, 'reviews': reviews},
     return array
@@ -311,38 +399,16 @@ def select_table_personal():
             desc = list(cursor.fetchall())
             authors += desc[0][3] + ", "
         authors=authors[0:len(authors)-2]
-        cursor.execute(f"SELECT * FROM public.article_topic WHERE article_id={article_id}")
-        article_desc = list(cursor.fetchall())
-        cursor.execute(f"SELECT * FROM public.topic WHERE id={article_desc[0][1]}")
-        topic_desc = list(cursor.fetchall())
-        topic = topic_desc[0][1]
-        cursor.execute(f"SELECT * FROM public.rating WHERE article_id={article_id} and isdeleted={False}")
-        rating_desc = list(cursor.fetchall())
-        count = 0
-        for log in rating_desc:
-            count += log[4]
-        if count!=0:
-            reviews = count/len(rating_desc)
-        else:
-            reviews='-'
+        topic = get_topic(article_id)
+        reviews = get_rating(article_id)
         array += {'name': name, 'author': authors, 'topic': topic, 'reviews': reviews},
     return array
 
 
-if __name__ == '__main__':
-    with open(".\\reviews\\test2.txt", "w") as file:
-        file.write("")
-    file.close()
-    with open(".\\reviews\\test3.txt", "w") as file:
-        file.write("")
-    file.close()
-    with open(".\\reviews\\denis.txt", "w") as file:
-        file.write("")
-    file.close()
-
 
 
 """  
+TESTS
 if __name__ == '__main__':
     array = select_table_desc()
     print(array)
@@ -364,6 +430,15 @@ if __name__ == '__main__':
     text_file.close()
     print(lines)
     form_text(path)
+    with open(".\\reviews\\test2.txt", "w") as file:
+        file.write("")
+    file.close()
+    with open(".\\reviews\\test3.txt", "w") as file:
+        file.write("")
+    file.close()
+    with open(".\\reviews\\denis.txt", "w") as file:
+        file.write("")
+    file.close()
     path = f".\\articles\\copy.txt"
     with open(path, "w") as file:
         file.write("Your text goes here. And reads like this.")

@@ -50,9 +50,11 @@
 		<a href="http://127.0.0.1:5000/signin">Log out</a>
 		{% endif %}
         </ul>
-		<p>
-			<input type="submit" name="create" value="Create new article">
-		</p>
+		<form action="" method="post">
+			<p>
+				<input type="submit" name="create" value="Create new article">
+			</p>
+		</form>
 		<div class="row">
 			<div class="col">
 				<div class="card card-body">
@@ -88,7 +90,6 @@
 				var data = searchTable(value, myArray)
 				buildTable(data)
 			})
-			buildTable(myArray)
 			function searchTable(value, data){
 				var filteredData = []
 				for (var i = 0; i < data.length; i++){
