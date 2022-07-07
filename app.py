@@ -1,4 +1,4 @@
-import requests, os, psycopg2, functional
+import requests, os, psycopg2, functional, json
 from flask import Flask, render_template, request, redirect, url_for, session
 
 app = Flask(__name__)
@@ -18,12 +18,15 @@ role_user: {user_id, role_id}
 article: {id, name, title, description, isdeleted}
 article_writer: {article_id, user_id, isauthor}
 article_status: {article_id, status_id}
+article_topic: {article_id, topic_id}
+topic: {id, name}
+rating: {id, user_id, article_id, date, rate, isdeleted}
 """
 
 @app.route('/', methods=['GET', 'POST'])
 def main_page():
-    fullname = session.get('fullname')
-    if fullname != None:
+    roles = session.get('role')
+    if roles != None:
         return redirect(url_for('.home'))
     else:
         return redirect(url_for('.sign_in_start'))
@@ -75,7 +78,7 @@ def signup():
         return render_template('sign_up.html', user_exist=1)
     elif password1 == '' and password2 == '':
         return render_template('sign_up.html', password1=password1, password2=password2)
-    elif password1 == password2:
+    elif password1 != password2:
         return render_template('sign_up.html', defferent=1)
     else:
         cursor.execute(f"INSERT INTO public.users (login, password, fullname, banned) VALUES ('{username}', '{password1}', '{fullname}', {False})")
@@ -203,7 +206,7 @@ def draft_start(article_name):
     ban = session.get('ban')
     if roles == None:
         return redirect(url_for('.sign_in_start'))
-    elif roles[0] == 1 or roles[1] == 1:
+    elif roles[0] == 1 or roles[2] == 1:
         cursor.execute(f"SELECT * FROM public.article WHERE name='{article}'")
         records = list(cursor.fetchall())
         if records == []:
@@ -211,6 +214,7 @@ def draft_start(article_name):
         else:
             session['article_id'] = records[0][0]
             title = records[0][2]
+            reason = records[0][3]
             cursor.execute(f"SELECT * FROM public.article_writer WHERE article_id={records[0][0]} and user_id={session.get('user')}")
             recs = list(cursor.fetchall())
             if recs == []:
@@ -228,7 +232,7 @@ def draft_start(article_name):
             elif records[0][1] == 3:
                 return render_template('draft.html', ban=ban, a=roles[0], m=roles[1], w=roles[2], new_publish=new_publish, text=text, title=title, author=author, aprooved=1)
             else:
-                return render_template('draft.html', ban=ban, a=roles[0], m=roles[1], w=roles[2], new_publish=new_publish, text=text, title=title, author=author, denied=1)
+                return render_template('draft.html', ban=ban, a=roles[0], m=roles[1], w=roles[2], new_publish=new_publish, text=text, title=title, author=author, reason=reason, denied=1)
     else:
         return redirect(url_for('.home'))
     
@@ -237,45 +241,43 @@ def draft_start(article_name):
     
 @app.route("/create/<article_name>", methods=['POST'])
 def draft(article_name):
-    article = article_name
     roles = session.get('role')
     ban = session.get('ban')
     new_publish = f"({functional.check_writer_uploads()})"
     article_text = request.form.get('article_text')
     title = request.form.get('title')
-    action_s = request.form.get('Save')
-    action_p = request.form.get('Publish')
-    action_d = request.form.get('Delete')
-    action_e = request.form.get('Editors')
-    article_id = session.get('article_id')
+    action = request.form.get('action')
+    cursor.execute(f"SELECT * FROM public.article WHERE name='{article_name}'")
+    records = list(cursor.fetchall())
+    article_id = records[0][0]
     author = functional.is_author(article_id, session.get('user'))
-    if action_d == 'delete':
+    if action == 'delete':
         cursor.execute(f"UPDATE public.article SET isdeleted='{True}' WHERE id={article_id}")
-    path = f".\\articles\\{article}.txt"
+        conn.commit()
+        return render_template('draft.html', ban=ban, a=roles[0], m=roles[1], w=roles[2], new_publish=new_publish, title=title, text=article_text, author=author, deleted = 1)
+    path = f".\\articles\\{article_name}.txt"
     with open(path, "w") as file:
         file.writelines(article_text)
-    if action_s == 'save':
+    if action == 'save':
         cursor.execute(f"UPDATE public.article SET title='{title}' WHERE id={article_id}")
         return render_template('draft.html', ban=ban, a=roles[0], m=roles[1], w=roles[2], new_publish=new_publish, title=title, text=article_text, author=author, save = 1)
-    elif action_p == 'publish':
+    elif action == 'publish':
         cursor.execute(f"UPDATE public.article_status SET status_id=2 WHERE article_id={article_id}")
         cursor.execute(f"UPDATE public.article SET title='{title}' WHERE id={article_id}")
         conn.commit()
         return render_template('draft.html', ban=ban, a=roles[0], m=roles[1], w=roles[2], new_publish=new_publish, title=title, text=article_text, author=author, publish = 1)
-    elif action_e == 'edit':
-        return redirect(url_for('.editors', article_name=article))
+    elif action == 'edit':
+        return redirect(url_for('.editors', article_name=article_name))
 
 
 @app.route("/editors/<article_name>", methods=['GET'])
 def editors_start(article_name):
-    article_name = article_name
     article_id = cursor.execute(f"SELECT * FROM public.article WHERE name='{article_name}'")
     records = list(cursor.fetchall())
     return functional.authorization_editors_check(records[0][0])
 
 @app.route("/editors/<article_name>", methods=['POST'])
 def editors(article_name):
-    article_name=article_name
     cursor.execute(f"SELECT * FROM public.article WHERE name='{article_name}'")
     records = list(cursor.fetchall())
     article_id = records[0][0]
@@ -303,7 +305,49 @@ def editors(article_name):
 @app.route("/published", methods=['GET'])
 def published_start():
     return functional.authorization_check(1, "published")
-        
+    
+@app.route("/published/<article_name>", methods=['GET'])
+def published(article_name):
+    return functional.authorization_check_published(article_name)
+
+@app.route("/published/<article_name>", methods=['POST'])
+def a_published(article_name):
+    action = request.form.get('action')
+    cursor.execute(f"SELECT * FROM public.article WHERE name='{article_name}'")
+    records = list(cursor.fetchall())
+    article_id = records[0][0]
+    title = records[0][2]
+    roles = session.get('role')
+    ban = session.get('ban')
+    new_publish = f"({functional.check_writer_uploads()})"
+    path = f".\\articles\\{article_name}.txt"
+    text = functional.form_text(path)
+    if action == "aproove":
+        cursor.execute(f"UPDATE public.article_status SET status_id={3} WHERE article_id={article_id}")
+        conn.commit()
+        with open(f".\\reviews\\{article_name}.txt", "w") as file:
+            file.write("")
+        file.close()
+        return render_template('a_published.html', ban=ban, a=roles[0], m=roles[1], w=roles[2], new_publish=new_publish, title=title, text=text, aprooved=1)
+    else:
+        reason = request.form.get('reason')
+        cursor.execute(f"UPDATE public.article_status SET status_id={4} WHERE article_id={article_id}")
+        cursor.execute(f"UPDATE public.article SET description='{reason}' WHERE id={article_id}")
+        conn.commit()
+        return render_template('a_published.html', ban=ban, a=roles[0], m=roles[1], w=roles[2], new_publish=new_publish, title=title, text=text, denied=1)
+
+@app.route("/<article_name>", methods=['GET'])
+def render_article(article_name):
+    return functional.authorization_check_article(article_name)
+
+
+@app.route("/data/", methods=['GET'])
+def get_home_data():
+    home_array = functional.select_table_desc()
+    published_array = functional.select_table_published()
+    personal_array = functional.select_table_personal()
+    #print(personal_array)
+    return {'home': home_array, 'published': published_array, 'personal': personal_array}
     
 
 if __name__ == '__main__':

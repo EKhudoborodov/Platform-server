@@ -3,7 +3,12 @@
     <head>
         <meta charset="utf-8">
         <title>Create</title>
-        <style>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+		<style>
+			th{ 
+				cursor: pointer;
+				color:#fff;
+			}
             ul.nav{
                 margin-left: 0px;
                 padding-left: 0px;
@@ -26,74 +31,72 @@
         </style>
     </head>
     <body>
-		<p>
 		{% if ban == True %}
-		<h1>You are banned on the Server!</h1>
+			<h1>You are banned on the Server!</h1>
 		{% else %}
-        <ul class="nav">
-		<a href="http://127.0.0.1:5000/home">Home</a>
-        {% if a == 1 %}
-		<a href="http://127.0.0.1:5000/role">Role</a>
-		{% endif %}
-		{% if w == 1 or a == 1 %}
-		<a href="http://127.0.0.1:5000/workshop">Write article</a>
-		{% endif %}
-		{% if m == 1 or a == 1 %}
-		<a href="http://127.0.0.1:5000/published">Published articles{{new_publish}}</a>
-		{% endif %}
-		<a href="http://127.0.0.1:5000/signin">Log out</a>
-		{% endif %}
-        </ul>
-		</p>
-		{% if no_article == 1 %}
-		There is no such article. You can create it <a href="http://127.0.0.1:5000/create">here</a>
-		{% elif publish == 1 %}
-		<p><h3>{{title}}</h3></p>
-		<p><textarea readonly rows="10" cols="40" style="font-size: 14pt;">{{text}}</textarea></p>
-		Article is published. Waiting for moderator to aproove.
-		{% elif aprooved == 1 %}
-		<p><h3>{{title}}</h3></p>
-		<p><textarea readonly rows="10" cols="40" style="font-size: 14pt;">{{text}}</textarea></p>
-		Article is aprooved.
-		{% if author == 1 %}
-		<p><input type="submit" name="Rewrite article" value="rewrite"></p>
-		{% endif %}
-		{% elif denied == 1 %}
-		<p><h3>{{title}}</h3></p>
-		<p><textarea readonly rows="10" cols="40" style="font-size: 14pt;">{{text}}</textarea></p>
-		Article is denied. {{reason}}
-		{% if author == 1 %}
-		<p><input type="submit" name="Rewrite article" value="rewrite"></p>
-		{% endif %}
-		{% elif deleted == 1 %}
-		Article is deleted. <a href="http://127.0.0.1:5000/create">Create new article</a>
-		{% else %}
-		<form action="" method="post">
-			<p>
-				<textarea name="title" rows="1" cols="40" style="font-size: 18pt;">{{title}}</textarea>
+			<ul class="nav">
+				<a href="http://127.0.0.1:5000/home">Home</a>
+				{% if a == 1 %}
+					<a href="http://127.0.0.1:5000/role">Role</a>
+				{% endif %}
+				{% if w == 1 or a == 1 %}
+					<a href="http://127.0.0.1:5000/workshop">Write article</a>
+				{% endif %}
+				{% if m == 1 or a == 1 %}
+					<a href="http://127.0.0.1:5000/published">Published articles{{new_publish}}</a>
+				{% endif %}
+				<a href="http://127.0.0.1:5000/signin">Log out</a>
+			</ul>
 			</p>
-			<p>
-			{% if text == None %}
-				<textarea name="article_text" rows="10" cols="40" placeholder="Write article text" style="font-size: 14pt;"></textarea>
+			{% if no_article == 1 %}
+				There is no such article. You can create it <a href="http://127.0.0.1:5000/create">here</a>
+			{% elif publish == 1 %}
+				<p><h3>{{title}}</h3></p>
+				<p><textarea readonly rows="25" cols="100" style="font-size: 14pt;">{{text}}</textarea></p>
+				Article is published. Waiting for moderator to aproove.
+			{% elif aprooved == 1 %}
+				<p><h3>{{title}}</h3></p>
+				<p><textarea readonly rows="25" cols="100" style="font-size: 14pt;">{{text}}</textarea></p>
+				Article is aprooved.
+				{% if author == 1 %}
+					<p><input type="submit" name="Rewrite article" value="rewrite"></p>
+				{% endif %}
+			{% elif denied == 1 %}
+				<p><h3>{{title}}</h3></p>
+				<p><textarea readonly rows="25" cols="100" style="font-size: 14pt;">{{text}}</textarea></p>
+				Article is denied. Reason of rejection:{{reason}}
+				{% if author == 1 %}
+					<p><input type="submit" name="Rewrite article" value="rewrite"></p>
+				{% endif %}
+			{% elif deleted == 1 %}
+				Article is deleted. <a href="http://127.0.0.1:5000/create">Create new article</a>
 			{% else %}
-				<textarea name="article_text" rows="10" cols="40" style="font-size: 14pt;">{{text}}</textarea>
+				<form action="" method="post">
+					<p>
+						<textarea name="title" rows="1" cols="100" style="font-size: 18pt;">{{title}}</textarea>
+					</p>
+					<p>
+						{% if text == None %}
+							<textarea name="article_text" rows="25" cols="100" placeholder="Write article text" style="font-size: 14pt;"></textarea>
+						{% else %}
+							<textarea name="article_text" rows="25" cols="100" style="font-size: 14pt;">{{text}}</textarea>
+						{% endif %}
+						<input type="submit" name="action" value="save">
+					</p>
+					{% if author == 1 %}
+					<p><input type="submit" name="action" value="edit"></p>
+					<p><input type="submit" name="action" value="publish"></p>
+					{% endif %}
+				</form>
+				<p>
+					{% if save == 1 %}
+						Article is saved.
+					{% endif %}
+				</p>
+				{% if author == 1 %}
+					<p><input type="submit" name="action" value="delete"></p>
+				{% endif %}
 			{% endif %}
-				<input type="submit" name="Save" value="save">
-			</p>
-			{% if author == 1 %}
-			<p><input type="submit" name="Editors" value="edit"></p>
-			<p><input type="submit" name="Piblish" value="publish"></p>
-			{% endif %}
-		</form>
-		<p>
-			{% if save == 1 %}
-			Article is saved.
-			{% endif %}
-		</p>
-		{% if author == 1 %}
-		<p><input type="submit" name="Delete" value="delete"></p>
 		{% endif %}
-		{% endif %}
-		
     </body>
 </html>

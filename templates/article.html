@@ -1,0 +1,121 @@
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Home</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+		<style>
+			th{ 
+				cursor: pointer;
+				color:#fff;
+			}
+            ul.nav{
+                margin-left: 0px;
+                padding-left: 0px;
+                list-style: none;
+            }
+            ul.nav a {
+                display: block;
+                width: 7em;
+                padding:10px;
+                background-color: #f4f4f4;
+                border-top: 1px dashed #333;
+                border-right: 1px dashed #333;
+                border-left: 5px solid #333;
+                text-decoration: none;
+                color: #333;
+            }
+            ul.nav li:last-child a {
+                border-bottom: 1px dashed #333;
+            }
+        </style>
+    </head>
+    <body>
+		{% if ban == True %}
+			<h1>You are banned on the Server!</h1>
+		{% else %}
+			<ul class="nav">
+				<a href="http://127.0.0.1:5000/home">Home</a>
+				{% if a == 1 %}
+					<a href="http://127.0.0.1:5000/role">Role</a>
+				{% endif %}
+				{% if w == 1 or a == 1 %}
+					<a href="http://127.0.0.1:5000/workshop">Write article</a>
+				{% endif %}
+				{% if m == 1 or a == 1 %}
+					<a href="http://127.0.0.1:5000/published">Published articles{{new_publish}}</a>
+				{% endif %}
+				<a href="http://127.0.0.1:5000/signin">Log out</a>
+			</ul>
+			{% if no_article == 1 and w == 1 %}
+				There is no such article. You can create it <a href="http://127.0.0.1:5000/create">here</a>
+			{% elif no_article == 1 %}
+				There is no such article.
+			{% else %}
+				<p>
+					<h1>{{title}}</h1>
+				<p>
+				<p>
+					<h3>{{topic}}<h3>
+				</p>
+				<p>
+					{{tags}}
+				</p>
+				<p>
+					<textarea readonly rows="25" cols="100" style="font-size: 14pt;">{{text}}</textarea>
+				</p>
+				<p>Reviews: {{article_rate}}</p>
+				{% if your_review or your_rate %}
+					<p>
+						{{your_rate}}:{{your_review}}
+					</p>
+				{% else %}
+					<form action="" method="post">
+						<p>
+							<select id="review" name="review">
+								<option value="5">5<option>
+								<option value="4">4<option>
+								<option value="3">3<option>
+								<option value="2">2<option>
+								<option value="1">1<option>	
+							<select>
+						</p>
+					<p>
+							<textarea rows="3" cols="60" style="font-size: 12pt;" placeholder="Write your review"><textarea>
+						</p>
+						<p>
+							<input type="submit" name="send" value="send">
+						</p>
+					</form>
+				{% endif %}
+				<div>
+					<tbody id="Reviews">
+					</tbody>
+				</div>
+				<script>
+					var myArray = [
+					]
+					buildTable(myArray)
+					function buildTable(data){
+						var reviews = document.getElementById('Reviews')
+						reviews.innerHTML = ''
+						for (var i = 0; i < data.length; i++){
+							var row = `<div>
+											<p>
+												<b>${data[i].author}:</b>
+												${data[i].username}
+												${data[i].rate}
+											</p><p>
+												${data[i].comment}
+											</p>
+								</div>`
+							reviews.innerHTML += row
+						}
+					}
+				</script>
+			{% endif %}
+		{% endif %}
+    </body>
+</html>

@@ -47,6 +47,7 @@
 					<a href="http://127.0.0.1:5000/published">Published articles{{new_publish}}</a>
 				{% endif %}
 				<a href="http://127.0.0.1:5000/signin">Log out</a>
+				{% endif %}
 			</ul>
 			<div class="row">
 				<div class="col">
@@ -67,16 +68,10 @@
 			</table>
 			<script>
 				var myArray = [
+{'name':'test1', 'author':'Egor Khudoborodov ', 'topic':'test', 'reviews':'5'},
+{'name':'test2', 'author':'Egor Khudoborodov Denis Zorin ', 'topic':'test', 'reviews':'5'},
+{'name':'test3', 'author':'Egor Khudoborodov ', 'topic':'test', 'reviews':'5'},
 				]
-				$.ajax({
-					method:'GET',
-					url:'http://127.0.0.1:5000/data',
-					success:function(response){
-						myArray = response.published
-						buildTable(myArray)
-						console.log(myArray)
-					}
-				})
 				$('#search-input').on('keyup', function(){
 					var value = $(this).val()
 					console.log('Value:', value)
@@ -100,7 +95,7 @@
 					table.innerHTML = ''
 					for (var i = 0; i < data.length; i++){
 						var row = `<tr>
-										<td><a href="http://127.0.0.1:5000/published/${data[i].name}">${data[i].name}</a></td>
+										<td><a href="http://127.0.0.1:5000/${data[i].name}">${data[i].name}</a></td>
 										<td>${data[i].author}</td>
 										<td>${data[i].topic}</td>
 										<td>${data[i].reviews}</td>
