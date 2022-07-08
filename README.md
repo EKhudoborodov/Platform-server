@@ -54,14 +54,14 @@ Tables:
   9) users: {id, login, password, fullname, isbanned}
 
 # Код и реализация
-  1) Регистрация и авторизация пользователей
+  (1) Регистрация и авторизация пользователей
      ![image](https://user-images.githubusercontent.com/90326938/177948873-16ff00e7-bc34-4cca-bdb8-41537bc13d57.png)
      ![image](https://user-images.githubusercontent.com/90326938/177949760-cc1f28ff-1b08-4fae-b61a-55e9a11fba52.png) ![image](https://user-images.githubusercontent.com/90326938/177949852-fbfd8d2e-b47b-4018-bae1-a7f209d1df62.png)
-  2) Разграничение по ролям (При переходе на любую страничку идёт проверка ролей пользователя, если у пользователя нет роли, необходимой 
+  (2) Разграничение по ролям (При переходе на любую страничку идёт проверка ролей пользователя, если у пользователя нет роли, необходимой 
      для просмотра страницы, его вернёт на начальную страницу; (5) у одного пользователя может быть несколько ролей)
      ![image](https://user-images.githubusercontent.com/90326938/177949216-e318f98c-fdb4-4aa7-a456-2c348a64d731.png)
      ![image](https://user-images.githubusercontent.com/90326938/177955919-8b8b9f40-a674-43ad-b018-4143c7df54b3.png)
-  3) Статья, может находиться в состоянии "Черновик" (6) с возможностью редактирования на сайте
+  (3) Статья, может находиться в состоянии "Черновик" (6) с возможностью редактирования на сайте
      ![image](https://user-images.githubusercontent.com/90326938/177950937-b0d5f397-900b-402e-be14-55662253ae9d.png)
      ![image](https://user-images.githubusercontent.com/90326938/177952557-9ea4197a-c9b1-49b6-9864-8149b61a14f8.png)
      В состоянии "Опубликована" - модератор или администратор могут одобрить статьтю или отклонить
@@ -73,20 +73,20 @@ Tables:
      В состоянии "Отклонена" - читатели не могут видеть статью
      ![image](https://user-images.githubusercontent.com/90326938/177954603-6e57bd01-fee0-4eeb-b76f-0f2a90ffdc25.png)
      ![image](https://user-images.githubusercontent.com/90326938/177954856-f14dc36b-fcbb-4760-8230-c09ce4f6fca6.png)
-  4) Автор статьи может добавлять соавторов и редакторов к своей статье
+  (4) Автор статьи может добавлять соавторов и редакторов к своей статье
      ![image](https://user-images.githubusercontent.com/90326938/177955210-58addee9-7b81-441d-81bb-1cafd2c1e0be.png)
      ![image](https://user-images.githubusercontent.com/90326938/177955747-8f58d883-31b7-4a9e-8c5c-01db8340e172.png)
-  7) Администратор может блокировать пользоватея
+  (7) Администратор может блокировать пользоватея
      ![image](https://user-images.githubusercontent.com/90326938/177956666-e7e00d32-c5e7-4106-a8bc-c24e98dccf56.png)
      ![image](https://user-images.githubusercontent.com/90326938/177957007-c337b33f-cb46-47a0-933b-f788eab82e61.png)
      Заблокированный потзователь не имеет доступа к сейту
      ![image](https://user-images.githubusercontent.com/90326938/177957248-4200885a-ee2a-4452-adad-fdc81a1cfd90.png)
-  8) Авторы и редакторы не могут редактировать опубликованную статью
+  (8) Авторы и редакторы не могут редактировать опубликованную статью
      ![image](https://user-images.githubusercontent.com/90326938/177957692-c86dbd85-d2f8-4afe-9823-3ebab2d5769e.png)
-  13) Сервер поддерживает возможность оценки статей
+  (13) Сервер поддерживает возможность оценки статей
      ![image](https://user-images.githubusercontent.com/90326938/177958197-a03250d1-4c33-4e74-a898-e9c4ecad4f48.png)
      ![image](https://user-images.githubusercontent.com/90326938/177958363-4d9563f0-d0f1-4fb9-8498-07f7436d3444.png)
-  15) Сервер поддерживает возможность поиска по названию статьи
+  (15) Сервер поддерживает возможность поиска по названию статьи
      ![image](https://user-images.githubusercontent.com/90326938/177961182-a7a56997-6035-4edb-8c4d-ad10d8c223b3.png)
      ![image](https://user-images.githubusercontent.com/90326938/177960180-b5e42f56-ce82-4cbb-bb70-53c89a80e457.png)
 
