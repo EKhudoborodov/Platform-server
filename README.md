@@ -38,7 +38,7 @@
 
 # Platform-server
 Framework: Flask;
-Imports: requests, os, psycopg2, functional, json, datetime, flask;
+Imports: requests, os, psycopg2, functional, datetime, flask;
 Data base: server_db;
 Url for data (method['GET']): 
   ![image](https://user-images.githubusercontent.com/90326938/177958673-47b538b3-2ea6-4148-b6c1-66c4ff9a10fd.png)
