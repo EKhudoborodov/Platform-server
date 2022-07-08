@@ -1,1 +1,2 @@
-1:Nice test\n
+1:Nice test
+3:It's good, but test2 is better!

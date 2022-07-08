@@ -194,9 +194,9 @@ def check_writer_uploads():
 def review_check(user_id, article_id, article_name):
     cursor.execute(f"SELECT * FROM public.rating WHERE user_id={user_id} and article_id={article_id}")
     records = list(cursor.fetchall())
-    if records == []:
-        return [None, None]
-    else:
+    rate = None
+    review = None
+    if records != []:
         rate = records[0][4]
         path = f".\\reviews\\{article_name}.txt"
         with open(path, "r") as text_file:
@@ -215,7 +215,7 @@ def review_check(user_id, article_id, article_name):
                 review = line[len(formed_id)+1:]
                 review = review[0:len(review)-2]
                 break
-        return [rate, review]
+    return [rate, review]
 
 def is_author(article_id, user_id):
     cursor.execute(f"SELECT * FROM public.article_writer WHERE article_id='{article_id}' and user_id='{user_id}'")
@@ -428,10 +428,11 @@ def select_reviews():
                     break
                 else:
                     author_id += line[i]
-            if author_id == user_id:
+            if int(author_id) == int(user_id):
                 continue
             else:
                 review = line[start+1:]
+                review = review[0:len(review)-2]
                 cursor.execute(f"SELECT * FROM public.users WHERE id={author_id}")
                 author_desc = list(cursor.fetchall())
                 username = author_desc[0][1]
@@ -439,7 +440,7 @@ def select_reviews():
                 cursor.execute(f"SELECT * FROM public.rating WHERE user_id={author_id} and article_id={article_id}")
                 rating_desc = list(cursor.fetchall())
                 rate = rating_desc[0][4]
-                array += {'author': author, 'username': username, 'rate': rate, 'review': review},
+                array += {'author': author, 'username': username, 'rate': rate, 'comment': review},
     return array
 
 if __name__ == '__main__':

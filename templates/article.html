@@ -75,8 +75,10 @@
 				<p>Reviews: {{rate}}</p>
 				{% if user_review or user_rate %}
 					<p>
-						Your review: {{user_rate}}:{{user_review}}
-					</p>
+						Your review: 
+					</p><p style="margin-left:50px;">
+						Rate ({{user_rate}}):{{user_review}}
+					</p><p></p>
 				{% else %}
 					<form action="" method="post">
 						<p>
@@ -97,8 +99,8 @@
 					</form>
 				{% endif %}
 				<div>
-					<tbody id="Reviews">
-					</tbody>
+					<div id="Reviews">
+					</div>
 				</div>
 				<script>
 					var myArray = [
@@ -118,8 +120,8 @@
 						for (var i = 0; i < data.length; i++){
 							var row = `<div>
 											<p>
-												<b>${data[i].author}</b>|${data[i].username}(${data[i].rate}):
-											</p><p>
+												<b>${data[i].author}</b> | ${data[i].username} (${data[i].rate}):
+											</p><p style="margin-left:50px;">
 												${data[i].comment}
 											</p>
 								</div>`
