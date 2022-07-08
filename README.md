@@ -86,6 +86,10 @@ Tables:
   13) Сервер поддерживает возможность оценки статей
      ![image](https://user-images.githubusercontent.com/90326938/177958197-a03250d1-4c33-4e74-a898-e9c4ecad4f48.png)
      ![image](https://user-images.githubusercontent.com/90326938/177958363-4d9563f0-d0f1-4fb9-8498-07f7436d3444.png)
+  15) Сервер поддерживает возможность поиска по названию статьи
+     ![image](https://user-images.githubusercontent.com/90326938/177961182-a7a56997-6035-4edb-8c4d-ad10d8c223b3.png)
+     ![image](https://user-images.githubusercontent.com/90326938/177960180-b5e42f56-ce82-4cbb-bb70-53c89a80e457.png)
+
 
 
 
