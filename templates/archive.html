@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <title>Published</title>
+        <title>Home</title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 		<style>
@@ -62,7 +62,7 @@
 					<th  data-colname="author" data-order="desc">Author &#9650</th>
 					<th  data-colname="topic" data-order="desc">Topic &#9650</th>
 					<th  data-colname="reviews" data-order="desc">Reviews &#9650</th>
-					<th data-colname="date" data-order="desc">Date of creation &#9650</th> 
+					<th data-colname="date" data-order="desc">Date of publication &#9650</th> 
 				</tr>
 				<tbody id="myTable">
 				</tbody>
@@ -74,7 +74,7 @@
 					method:'GET',
 					url:'http://127.0.0.1:5000/data',
 					success:function(response){
-						myArray = response.published
+						myArray = response.archive
 						buildTable(myArray)
 						console.log(myArray)
 					}
@@ -101,7 +101,7 @@
 					table.innerHTML = ''
 					for (var i = 0; i < data.length; i++){
 						var row = `<tr>
-										<td><a href="http://127.0.0.1:5000/published/${data[i].name}">${data[i].name}</a></td>
+										<td><a href="http://127.0.0.1:5000/${data[i].name}">${data[i].name}</a></td>
 										<td>${data[i].author}</td>
 										<td>${data[i].topic}</td>
 										<td>${data[i].reviews}</td>

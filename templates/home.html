@@ -37,6 +37,7 @@
 		{% else %}
 			<ul class="nav">
 				<a href="http://127.0.0.1:5000/home">Home</a>
+				<a href="http://127.0.0.1:5000/archive">All articles</a>
 				{% if a == 1 %}
 					<a href="http://127.0.0.1:5000/role">Role</a>
 				{% endif %}
@@ -55,12 +56,14 @@
 					</div>
 				</div>
 			</div>
+			<h2>Today's uploads</h2>
 			<table class="table table-striped">
 				<tr  class="bg-info">
 					<th  class="bg-info" data-colname="name" data-order="desc">Name &#9650</th>
 					<th  data-colname="author" data-order="desc">Author &#9650</th>
 					<th  data-colname="topic" data-order="desc">Topic &#9650</th>
 					<th  data-colname="reviews" data-order="desc">Reviews &#9650</th>
+					<th data-colname="date" data-order="desc">Date of publication &#9650</th> 
 				</tr>
 				<tbody id="myTable">
 				</tbody>
@@ -103,6 +106,7 @@
 										<td>${data[i].author}</td>
 										<td>${data[i].topic}</td>
 										<td>${data[i].reviews}</td>
+										<td>${data[i].date}</td>
 								</tr>`
 						table.innerHTML += row
 					}

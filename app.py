@@ -1,4 +1,4 @@
-import requests, os, psycopg2, functional, json, datetime
+import requests, os, psycopg2, functional
 from flask import Flask, render_template, request, redirect, url_for, session
 
 app = Flask(__name__)
@@ -15,7 +15,7 @@ cursor = conn.cursor()
 URL = "http://127.0.0.1:5000/"
 users: {id, login, password, fullname, isbanned}
 role_user: {user_id, role_id}
-article: {id, name, title, description, isdeleted}
+article: {id, name, title, description, isdeleted, date}
 article_writer: {article_id, user_id, isauthor}
 article_status: {article_id, status_id}
 article_topic: {article_id, topic_id}
@@ -171,17 +171,28 @@ def create_start():
 
 @app.route("/create/", methods=['POST'])
 def create():
+    roles = flask.session.get('role')
+    new_publish = f"({functional.check_writer_uploads()})"
     article = request.form.get('article')
+    #Check for simbols in article name
+    for char in article:
+        if not (char.isalpha() or char.isdigit() or cahr == " "):
+            return render_template('create.html', a=roles[0], m=roles[1], w=roles[2], new_publish=new_publish, article_sim = 1)
     title = request.form.get('title')
+    #Check for simbols in article's title
+    for char in title:
+        if not (char.isalpha() or char.isdigit() or cahr == " "):
+            return render_template('create.html', a=roles[0], m=roles[1], w=roles[2], new_publish=new_publish, title_sim = 1)
     topic_id = request.form.get('topic')
     user_id = session.get('user')
     cursor.execute(f"SELECT * FROM public.article WHERE name='{article}'")
     records = list(cursor.fetchall())
     if records != []:
-        return render_template('create.html', article_exist = 1)
+        return render_template('create.html', a=roles[0], m=roles[1], w=roles[2], new_publish=new_publish, article_exist = 1)
     else:
         path = f".\\articles\\{article}.txt"
-        cursor.execute(f"INSERT INTO public.article (name, title, description, isdeleted) VALUES ('{article}', '{title}', '{path}', {False})")
+        time = functional.get_current_date()
+        cursor.execute(f"INSERT INTO public.article (name, title, description, isdeleted, date) VALUES ('{article}', '{title}', '{path}', {False}, '{time}')")
         conn.commit()
         cursor.execute(f"SELECT * FROM public.article WHERE name='{article}'")
         records = list(cursor.fetchall())
@@ -283,7 +294,8 @@ def a_published(article_name):
     path = f".\\articles\\{article_name}.txt"
     text = functional.form_text(path)
     if action == "aproove":
-        cursor.execute(f"UPDATE public.article_status SET status_id={3} WHERE article_id={article_id}")
+        time = functional.get_current_date()
+        cursor.execute(f"UPDATE public.article_status SET status_id={3}, date='{time}' WHERE article_id={article_id}")
         conn.commit()
         with open(f".\\reviews\\{article_name}.txt", "w") as file:
             file.write("")
@@ -318,23 +330,27 @@ def save_review(article_name):
     cursor.execute(f"SELECT * FROM public.article WHERE name='{article_name}'")
     records = list(cursor.fetchall())
     article_id = records[0][0]
-    time = str(datetime.datetime.now())
-    time = time[0:10]
-    cursor.execute(f"INSERT INTO public.rating (user_id, article_id, date, rate, isdeleted) VALUES ({user_id}, {article_id}, {time}, {rate}, {False})")
+    time = functional.get_current_date()
+    cursor.execute(f"INSERT INTO public.rating (user_id, article_id, date, rate, isdeleted) VALUES ({user_id}, {article_id}, '{time}', {rate}, {False})")
     conn.commit()
     return functional.authorization_check_article(article_name)
 
 
+@app.route("/archive", methods=['GET'])
+def archive_start():
+    return functional.authorization_check(3, 'archive')
+
 @app.route("/data/", methods=['GET'])
 def get_home_data():
-    home_array = functional.select_table_desc()
+    archive_array = functional.select_table_desc()
     published_array = functional.select_table_published()
     personal_array = functional.select_table_personal()
+    home_array = functional.select_table_recent()
     article_id = session.get('article_id')
     if article_id != None:
         reviews_array = functional.select_reviews()
-        return {'home': home_array, 'published': published_array, 'personal': personal_array, 'reviews': reviews_array}
-    return {'home': home_array, 'published': published_array, 'personal': personal_array}
+        return {'home': home_array, 'published': published_array, 'personal': personal_array, 'reviews': reviews_array, 'archive': archive_array}
+    return {'home': home_array, 'published': published_array, 'personal': personal_array, 'archive': archive_array}
     
 
 if __name__ == '__main__':

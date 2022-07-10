@@ -36,6 +36,7 @@
 		{% else %}
 			<ul class="nav">
 				<a href="http://127.0.0.1:5000/home">Home</a>
+				<a href="http://127.0.0.1:5000/archive">All articles</a>
 				{% if a == 1 %}
 					<a href="http://127.0.0.1:5000/role">Role</a>
 				{% endif %}
@@ -72,8 +73,14 @@
 				Article is deleted. <a href="http://127.0.0.1:5000/create">Create new article</a>
 			{% else %}
 				<form action="" method="post">
+					<p style="margin-left:20px;">
+						Title for article
+					</p>
 					<p>
 						<textarea name="title" rows="1" cols="100" style="font-size: 18pt;">{{title}}</textarea>
+					</p>
+					<p style="margin-left:20px;">
+						Article text
 					</p>
 					<p>
 						{% if text == None %}
