@@ -339,26 +339,38 @@ def render_article(article_name):
 
 @app.route("/<article_name>", methods=['POST'])
 def save_review(article_name):
-    rate = request.form.get('rate')
-    review = request.form.get('review')
     user_id = session.get('user')
-    action = request.form.get('send')
     path = f".\\reviews\\{article_name}.txt"
-    with open(path, "r") as file:
-        lines = file.readlines()
-    file.close()
-    lines += f"{user_id}:{review}\n"
-    text = functional.form_article(lines)
-    with open(path, "w") as file:
-        file.write(text)
-    file.close()
     cursor.execute(f"SELECT * FROM public.article WHERE name='{article_name}'")
     records = list(cursor.fetchall())
     article_id = records[0][0]
-    time = functional.get_current_date()
-    cursor.execute(f"INSERT INTO public.rating (user_id, article_id, date, rate, isdeleted) VALUES ({user_id}, {article_id}, '{time}', {rate}, {False})")
-    conn.commit()
-    return functional.authorization_check_article(article_name)
+    action = request.form.get('action')
+    if action == "Send":
+        rate = request.form.get('rate')
+        review = request.form.get('review')
+        time = functional.get_current_date()
+        #checking if user had already wrtitten article but then deleted it
+        cursor.execute(f"SELECT * FROM public.rating WHERE user_id={user_id} and article_id={article_id}")
+        check = list(cursor.fetchall())
+        if check == []:
+            with open(path, "r") as file:
+                lines = file.readlines()
+            file.close()
+            lines += f"{user_id}:{review}\n"
+            text = functional.form_article(lines)
+            with open(path, "w") as file:
+                file.write(text)
+            file.close()
+            cursor.execute(f"INSERT INTO public.rating (user_id, article_id, date, rate, isdeleted) VALUES ({user_id}, {article_id}, '{time}', {rate}, {False})")
+        else:
+            functional.update_reviews(article_name, user_id, article_id, review, path)
+            cursor.execute(f"UPDATE public.rating SET date='{time}', rate={rate}, isdeleted={False} WHERE user_id={user_id} and article_id={article_id}")
+        conn.commit()
+        return functional.authorization_check_article(article_name)
+    elif action == "Delete":
+        cursor.execute(f"UPDATE public.rating SET isdeleted={True} WHERE user_id={user_id} and article_id={article_id}")
+        conn.commit()
+        return functional.authorization_check_article(article_name)
 
 
 @app.route("/archive", methods=['GET'])

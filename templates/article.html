@@ -78,8 +78,11 @@
 					<p>
 						Your review: 
 					</p><p style="margin-left:50px;">
-						Rate ({{user_rate}}):{{user_review}}
-					</p><p></p>
+						Rate ({{user_rate}}):{{user_review}} | {{user_date}}
+					</p>
+					<form action="" method="post">
+						<input type="submit" name="action" value="Delete">
+					</form>
 				{% else %}
 					<form action="" method="post">
 						<p>
@@ -95,7 +98,7 @@
 							<textarea name="review" rows="3" cols="60" style="font-size: 12pt;" placeholder="Write your review"></textarea>
 						</p>
 						<p>
-							<input type="submit" name="send" value="send">
+							<input type="submit" name="action" value="Send">
 						</p>
 					</form>
 				{% endif %}
@@ -121,7 +124,7 @@
 						for (var i = 0; i < data.length; i++){
 							var row = `<div>
 											<p>
-												<b>${data[i].author}</b> | ${data[i].username} (${data[i].rate}):
+												${data[i].date} | <b>${data[i].author}</b> | ${data[i].username} (${data[i].rate}):
 											</p><p style="margin-left:50px;">
 												${data[i].comment}
 											</p>

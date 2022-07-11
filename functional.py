@@ -35,18 +35,31 @@ def send_roles(records):
         roles.append(pair[1])
     return roles
 
-def select_role(roles):
-    res = [0, 0, 0, 0]
-    for role in roles:
-        if role == 1:
-            res[0]=1
-        elif role == 2:
-            res[1]=1
-        elif role == 3:
-            res[2]=1
-        elif role == 4:
-            res[3]=1
-    return res
+def update_reviews(article_name, user_id, article_id, review, path):
+    with open(path, "r") as file:
+        lines = file.readlines()
+    file.close()
+    new_lines = []
+    formed_id = str(user_id)
+    for line in lines:
+        wrong = 1
+        for i in range(len(formed_id)):
+            if line[i] == formed_id[i]:
+                wrong = 0
+            else:
+                wrong = 1
+                break
+        if wrong == 0:
+            new_lines += f"{user_id}:{review}\n"
+        else:
+            new_lines += line
+    text = form_article(new_lines)
+    with open(path, "w") as file:
+        file.write(text)
+    file.close()
+    return 0
+    
+    
 
 #CHECK
 def authorization_check(validate_role, direction):
@@ -181,7 +194,7 @@ def authorization_check_article(article_name):
                 user_review=review_check(user_id, article_id, article_name)
                 cursor.execute(f"UPDATE public.user_read SET isread={True} WHERE user_id={user_id} and article_id={article_id} and isread={False}")
                 conn.commit()
-                return flask.render_template("article.html", a = user_roles[0], m = user_roles[1], w = user_roles[2], ban = ban, new_publish=new_publish, article_name=article_name, title=title, text=text, rate=rate, user_rate=user_review[0], user_review=user_review[1])
+                return flask.render_template("article.html", a = user_roles[0], m = user_roles[1], w = user_roles[2], ban = ban, new_publish=new_publish, article_name=article_name, title=title, text=text, rate=rate, user_rate=user_review[0], user_review=user_review[1], user_date=user_review[2])
             #path = f".\\reviews\\{article_name}.txt"
             #reviews = form_text(path)
             
@@ -195,12 +208,14 @@ def check_writer_uploads():
     return res
 
 def review_check(user_id, article_id, article_name):
-    cursor.execute(f"SELECT * FROM public.rating WHERE user_id={user_id} and article_id={article_id}")
+    cursor.execute(f"SELECT * FROM public.rating WHERE user_id={user_id} and article_id={article_id} and isdeleted={False}")
     records = list(cursor.fetchall())
     rate = None
     review = None
+    date = None
     if records != []:
         rate = records[0][4]
+        date = records[0][3]
         path = f".\\reviews\\{article_name}.txt"
         with open(path, "r") as text_file:
             lines = text_file.readlines()
@@ -209,16 +224,15 @@ def review_check(user_id, article_id, article_name):
         for line in lines:
             wrong = 1
             for i in range(len(formed_id)):
-                if line[i] == formed_id[i-1]:
+                if line[i] == formed_id[i]:
                     wrong = 0
                 else:
                     wrong = 1
                     break
             if wrong == 0:
                 review = line[len(formed_id)+1:]
-                review = review[0:len(review)-1]
                 break
-    return [rate, review]
+    return [rate, review, date]
 
 def is_author(article_id, user_id):
     cursor.execute(f"SELECT * FROM public.article_writer WHERE article_id='{article_id}' and user_id='{user_id}'")
@@ -353,6 +367,19 @@ def get_current_date():
 
 
 #SELECT
+def select_role(roles):
+    res = [0, 0, 0, 0]
+    for role in roles:
+        if role == 1:
+            res[0]=1
+        elif role == 2:
+            res[1]=1
+        elif role == 3:
+            res[2]=1
+        elif role == 4:
+            res[3]=1
+    return res
+
 def select_table_desc():
     cursor.execute(f"SELECT * FROM public.article WHERE isdeleted={False}")
     records = list(cursor.fetchall())
@@ -432,7 +459,7 @@ def select_table_personal():
     return array
 
 def select_reviews():
-    #author, username, rate, review
+    #author, username, rate, review, date
     user_id = flask.session.get('user')
     article_id = flask.session.get('article_id')
     array = []
@@ -464,7 +491,8 @@ def select_reviews():
                 cursor.execute(f"SELECT * FROM public.rating WHERE user_id={author_id} and article_id={article_id}")
                 rating_desc = list(cursor.fetchall())
                 rate = rating_desc[0][4]
-                array += {'author': author, 'username': username, 'rate': rate, 'comment': review},
+                date = rating_desc[0][3]
+                array += {'author': author, 'username': username, 'rate': rate, 'comment': review, 'date': date},
     return array
 
 def select_table_recent():
@@ -495,7 +523,7 @@ def select_table_recent():
             cursor.execute(f"SELECT * FROM public.user_read WHERE article_id={article_id} and isread={True}")
             views_check = list(cursor.fetchall())
             views = len(views_check)
-            array += {'name':name, 'author': authors, 'topic': topic, 'views': views, 'reviews': reviews, 'date': date},
+            array += {'name': name, 'author': authors, 'topic': topic, 'views': views, 'reviews': reviews, 'date': date},
     return array
         
 
