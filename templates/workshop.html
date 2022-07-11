@@ -51,7 +51,7 @@
 		<a href="http://127.0.0.1:5000/signin">Log out</a>
 		{% endif %}
         </ul>
-		<form action="" method="post">
+		<form action="" method="post" autocomplete="off">
 			<p>
 				<input type="submit" name="create" value="Create new article">
 			</p>
@@ -68,8 +68,9 @@
 				<th  class="bg-info" data-colname="name" data-order="desc">Name &#9650</th>
 				<th  data-colname="author" data-order="desc">Author &#9650</th>
 				<th  data-colname="topic" data-order="desc">Topic &#9650</th>
+				<th  data-colname="views" data-order="desc">Views &#9650</th>
 				<th  data-colname="reviews" data-order="desc">Reviews &#9650</th>
-				<th data-colname="date" data-order="desc">Date of creation &#9650</th> 
+				<th data-colname="date" data-order="desc">Date of publication &#9650</th> 
 			</tr>
 			<tbody id="myTable">
 			</tbody>
@@ -111,6 +112,7 @@
 									<td><a href="http://127.0.0.1:5000/create/${data[i].name}">${data[i].name}</a></td>
 									<td>${data[i].author}</td>
 									<td>${data[i].topic}</td>
+									<td>${data[i].views}</td>
 									<td>${data[i].reviews}</td>
 									<td>${data[i].date}</td>
 							</tr>`

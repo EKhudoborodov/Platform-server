@@ -6,14 +6,14 @@
 </head>
 <body>
 	<a href="http://127.0.0.1:5000/signin">Sign in</a>
-    <form action="" method="post">
+    <form action="" method="post" autocomplete="off">
 	<p>
 		<label for="fullname">Fullname</label>
-	    <input type="text" name="fullname">
+	    <input type="text" name="fullname" value={{fullname}}>
 	</p>
     <p>
 	    <label for="username">Username</label>
-	    <input type="text" name="username">
+	    <input type="text" name="username" value={{username}}>
 	</p>
 	<p>
 	    <label for="password1">Password</label>
@@ -37,7 +37,8 @@
 		Password fields can't be empty!
 		{% elif defferent == 1 %}
 		Passwords are different.
-		
+		{% elif short == 1 %}
+		Password must be at least 8 simbols
 		{% endif %}
     </form>
 

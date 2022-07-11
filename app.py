@@ -21,8 +21,10 @@ article_status: {article_id, status_id}
 article_topic: {article_id, topic_id}
 topic: {id, name}
 rating: {id, user_id, article_id, date, rate, isdeleted}
+user_read: {user_id, article_id, isread}
 """
 
+#decorator for redirecting if user entered this page somehow
 @app.route('/', methods=['GET', 'POST'])
 def main_page():
     roles = session.get('role')
@@ -31,23 +33,29 @@ def main_page():
     else:
         return redirect(url_for('.sign_in_start'))
 
+#decorators for sign in page
 @app.route('/signin/', methods=['GET'])
 def sign_in_start():
+    #function for stopping all sessions
     functional.stop_sessions()
     return render_template('sign_in.html')
 
 @app.route('/signin/', methods=['POST'])
 def signin():
+    #requesting entered username and password
     username = request.form.get('username')
     password = request.form.get('password')
+    #checking if user enter something or not
     if username == '' or password == '':
         return render_template('sign_in.html', username=username, password=password)
     else:
         cursor.execute(f"SELECT * FROM public.users WHERE login='{username}' AND password='{password}'", (str(username), str(password)))
         records = list(cursor.fetchall())
+        #checking if user exist in database
         if records == []:
-            return render_template('sign_in.html', no_user=1)
+            return render_template('sign_in.html', username=username, no_user=1)
         else:
+            #saving user's information in session
             user_id = records[0][0]
             session['user'] = user_id
             session['fullname'] = records[0][3]
@@ -57,29 +65,35 @@ def signin():
             roles = functional.select_role(functional.send_roles(records))
             session['role'] = roles
             return redirect(url_for('.home'))
-        
+
+#decorators for sign up page   
 @app.route('/signup/', methods=['GET'])
 def sign_up_start():
     return render_template('sign_up.html')
 
 @app.route('/signup/', methods=['POST'])
 def signup():
+    #requesting entered fullname, username and passwords
     fullname = request.form.get('fullname')
     username = request.form.get('username')
     password1 = request.form.get('password1')
     password2 = request.form.get('password2')
     cursor.execute(f"SELECT * FROM public.users WHERE login='{username}'", (str(username)))
     records = list(cursor.fetchall())
+    #checking if user enter something or not in all inputs
     if fullname == '':
-        return render_template('sign_up.html', fullname=fullname)
+        return render_template('sign_up.html', fullname=fullname, username=username)
     elif username == '':
-        return render_template('sign_up.html', username=username)
+        return render_template('sign_up.html', fullname=fullname, username=username)
     elif records != [] :
-        return render_template('sign_up.html', user_exist=1)
+        return render_template('sign_up.html', fullname=fullname, username=username, user_exist=1)
     elif password1 == '' and password2 == '':
-        return render_template('sign_up.html', password1=password1, password2=password2)
+        return render_template('sign_up.html', fullname=fullname, username=username, password1=password1, password2=password2)
+    #checking if passwords aren't different
     elif password1 != password2:
-        return render_template('sign_up.html', defferent=1)
+        return render_template('sign_up.html', fullname=fullname, username=username, defferent=1)
+    elif len(password1)<8:
+        return render_template('sign_up.html', fullname=fullname, username=username, short=1)
     else:
         cursor.execute(f"INSERT INTO public.users (login, password, fullname, banned) VALUES ('{username}', '{password1}', '{fullname}', {False})")
         conn.commit()
@@ -87,12 +101,23 @@ def signup():
         records = list(cursor.fetchall())
         cursor.execute(f"INSERT INTO public.role_user (user_id, role_id) VALUES ('{records[0][0]}', 4)")
         conn.commit()
+        cursor.execute(f"SELECT * FROM public.article WHERE isdeleted={False}")
+        article_desc = list(cursor.fetchall())
+        for article in article_desc:
+            article_id = article[0]
+            cursor.execute(f"SELECT * FROM public.article_status WHERE article_id={article_id}")
+            status_desc = list(cursor.fetchall())
+            if status_desc[0][1] == 3:
+                cursor.execute(f"INSERT INTO public.user_read (user_id, article_id, isread) VALUES ({records[0][0]}, {article_id}, {False})")
+        conn.commit()
         return redirect(url_for('.sign_in_start'))
 
+#decorator for home page where user can view articles which were published recently
 @app.route("/home/", methods=['GET', 'POST'])
 def home():
     return functional.authorization_check(3, 'home')
 
+#decorators for role page where admin can update user roles
 @app.route("/role/", methods=['GET'])
 def role_start():
     return functional.authorization_check(0, 'role')
@@ -304,7 +329,7 @@ def a_published(article_name):
     else:
         reason = request.form.get('reason')
         cursor.execute(f"UPDATE public.article_status SET status_id={4} WHERE article_id={article_id}")
-        cursor.execute(f"UPDATE public.article SET description='{reason}' WHERE id={article_id}")
+        cursor.execute(f"UPDATE public.article SET description='{reason}', isdeleted={True} WHERE id={article_id}")
         conn.commit()
         return render_template('a_published.html', ban=ban, a=roles[0], m=roles[1], w=roles[2], new_publish=new_publish, title=title, text=text, denied=1)
 

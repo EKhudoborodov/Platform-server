@@ -87,6 +87,26 @@ def insert_topics():
         conn.commit()
     print("Topics are inserted.")
     return 0
+    
+def mark_as_read():
+    enter = str(input("Do you want to mark every article as read by all users? (enter 'y' or 'n')"))
+    while enter != 'y' and enter != 'n':
+        enter = str(input("Pleese enter 'y' or 'n'."))
+    if enter == 'y':
+        cursor.execute("SELECT * FROM public.users")
+        records = list(cursor.fetchall())
+        cursor.execute("SELECT * FROM public.article")
+        article_desc = list(cursor.fetchall())
+        for rec in records:
+            user_id = rec[0]
+            for article in article_desc:
+                article_id = article[0]
+                cursor.execute(f"SELECT * FROM public.article_status WHERE article_id={article_id}")
+                check = list(cursor.fetchall())
+                if check[0][1] == 3:
+                    cursor.execute(f"INSERT INTO public.user_read (user_id, article_id, isread) VALUES ({user_id}, {article_id}, {True})")
+        conn.commit()
+    return 0
 
 if __name__ == '__main__':
     conn = psycopg2.connect(database="server_db",
@@ -99,7 +119,7 @@ if __name__ == '__main__':
     insert_statuses()
     insert_topics()
     insert_admin()
-    
+    mark_as_read()
     
 
  

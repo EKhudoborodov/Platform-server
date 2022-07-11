@@ -11,13 +11,13 @@ cursor = conn.cursor()
 
 #FOR SIGN IN AND SIGN UP
 def stop_sessions():
-    flask.session['user'] = None
-    flask.session['fullname'] = None
-    flask.session['role'] = None
-    flask.session['ban'] = None
-    flask.session['article'] = None
-    flask.session['article_id'] = None
-    flask.session['title'] = None
+    flask.session['user'] = None # session for user_id
+    flask.session['fullname'] = None # session for user's fullname
+    flask.session['role'] = None # session for user's roles
+    flask.session['ban'] = None # session for user's ban status
+    flask.session['article'] = None # session for name of latest openned article
+    flask.session['article_id'] = None # session for id of latest openned article
+    flask.session['title'] = None # session for title of latest oppend article
     return 0
 
 def crypt_role(role):
@@ -157,6 +157,7 @@ def authorization_check_article(article_name):
             cursor.execute(f"SELECT * FROM public.article_status WHERE article_id={article_id}")
             check = list(cursor.fetchall())
             status_id = check[0][1]
+            #checking if article is aprooved.
             if status_id != 3:
                 cursor.execute(f"SELECT * FROM public.article_writer WHERE article_id={article_id} and user_id={user_id}")
                 check = list(cursor.fetchall())
@@ -178,6 +179,8 @@ def authorization_check_article(article_name):
                 topic = get_topic(article_id)
                 rate = get_rating(article_id)
                 user_review=review_check(user_id, article_id, article_name)
+                cursor.execute(f"UPDATE public.user_read SET isread={True} WHERE user_id={user_id} and article_id={article_id} and isread={False}")
+                conn.commit()
                 return flask.render_template("article.html", a = user_roles[0], m = user_roles[1], w = user_roles[2], ban = ban, new_publish=new_publish, article_name=article_name, title=title, text=text, rate=rate, user_rate=user_review[0], user_review=user_review[1])
             #path = f".\\reviews\\{article_name}.txt"
             #reviews = form_text(path)
@@ -371,7 +374,10 @@ def select_table_desc():
             authors=authors[0:len(authors)-2]
             topic = get_topic(article_id)
             reviews = get_rating(article_id)
-            array += {'name':name, 'author': authors, 'topic': topic, 'reviews': reviews, 'date': date},
+            cursor.execute(f"SELECT * FROM public.user_read WHERE article_id={article_id} and isread={True}")
+            views_check = list(cursor.fetchall())
+            views = len(views_check)
+            array += {'name':name, 'author': authors, 'topic': topic, 'views': views, 'reviews': reviews, 'date': date},
     return array
 
 def select_table_published():
@@ -394,7 +400,8 @@ def select_table_published():
         authors=authors[0:len(authors)-2]
         topic = get_topic(article_id)
         reviews = '-'
-        array += {'name': name, 'author': authors, 'topic': topic, 'reviews': reviews, 'date': date},
+        views = 0
+        array += {'name': name, 'author': authors, 'topic': topic, 'views': views, 'reviews': reviews, 'date': date},
     return array
 
 def select_table_personal():
@@ -418,7 +425,10 @@ def select_table_personal():
         authors=authors[0:len(authors)-2]
         topic = get_topic(article_id)
         reviews = get_rating(article_id)
-        array += {'name': name, 'author': authors, 'topic': topic, 'reviews': reviews, 'date': date},
+        cursor.execute(f"SELECT * FROM public.user_read WHERE article_id={article_id} and isread={True}")
+        views_check = list(cursor.fetchall())
+        views = len(views_check)
+        array += {'name': name, 'author': authors, 'topic': topic, 'views': views, 'reviews': reviews, 'date': date},
     return array
 
 def select_reviews():
@@ -458,8 +468,9 @@ def select_reviews():
     return array
 
 def select_table_recent():
-    date = get_current_date()
-    cursor.execute(f"SELECT * FROM public.article WHERE isdeleted={False} and date='{date}'")
+    current_date = get_current_date()
+    user_id = flask.session.get('user')
+    cursor.execute(f"SELECT * FROM public.article WHERE isdeleted={False}")
     records = list(cursor.fetchall())
     array = []
     for rec in records:
@@ -468,7 +479,9 @@ def select_table_recent():
         date = rec[5]
         cursor.execute(f"SELECT * FROM public.article_status WHERE article_id={article_id}")
         check = list(cursor.fetchall())
-        if check[0][1] == 3:
+        cursor.execute(f"SELECT * FROM public.user_read WHERE user_id={user_id} and article_id={article_id}")
+        read_check = list(cursor.fetchall())
+        if check[0][1] == 3 and (read_check[0][2] != True or rec[5] == current_date):
             cursor.execute(f"SELECT * FROM public.article_writer WHERE article_id={article_id}")
             article_desc = list(cursor.fetchall())
             authors = ""
@@ -479,7 +492,10 @@ def select_table_recent():
             authors=authors[0:len(authors)-2]
             topic = get_topic(article_id)
             reviews = get_rating(article_id)
-            array += {'name':name, 'author': authors, 'topic': topic, 'reviews': reviews, 'date': date},
+            cursor.execute(f"SELECT * FROM public.user_read WHERE article_id={article_id} and isread={True}")
+            views_check = list(cursor.fetchall())
+            views = len(views_check)
+            array += {'name':name, 'author': authors, 'topic': topic, 'views': views, 'reviews': reviews, 'date': date},
     return array
         
 

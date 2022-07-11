@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <title>Home</title>
+        <title>Articles</title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 		<style>
@@ -53,6 +53,13 @@
 				<div class="col">
 					<div class="card card-body">
 						<input id="search-input" class="form-control" type="text">
+						<select id="search-option" class="form-control">
+							<option value="name">Article's name</option>
+							<option value="author">Article's authors</option>
+							<option value="topic">Article's topic</option>
+							<option value="rate">Article's rate</option>
+							<option value="date">Date of publication</option>
+						</select>
 					</div>
 				</div>
 			</div>
@@ -61,6 +68,7 @@
 					<th  class="bg-info" data-colname="name" data-order="desc">Name &#9650</th>
 					<th  data-colname="author" data-order="desc">Author &#9650</th>
 					<th  data-colname="topic" data-order="desc">Topic &#9650</th>
+					<th  data-colname="views" data-order="desc">Views &#9650</th>
 					<th  data-colname="reviews" data-order="desc">Reviews &#9650</th>
 					<th data-colname="date" data-order="desc">Date of publication &#9650</th> 
 				</tr>
@@ -81,16 +89,31 @@
 				})
 				$('#search-input').on('keyup', function(){
 					var value = $(this).val()
+					var option_value = $('#search-option').val()
 					console.log('Value:', value)
-					var data = searchTable(value, myArray)
+					var data = searchTable(value, myArray, option_value)
 					buildTable(data)
 				})
-				function searchTable(value, data){
+				function searchTable(value, data, option_value){
 					var filteredData = []
 					for (var i = 0; i < data.length; i++){
 						value = value.toLowerCase()
-						var name = data[i].name.toLowerCase()
-						if(name.includes(value)){
+						if(option_value == "name"){
+							var check = data[i].name.toLowerCase()
+						}
+						else if(option_value == "topic"){
+							var check = data[i].topic.toLowerCase()
+						}
+						else if (option_value == "rate"){
+							var check = data[i].reviews.toLowerCase()
+						}
+						else if (option_value == "author"){
+							var check = data[i].author.toLowerCase()
+						}
+						else if (option_value == "date"){
+							var check = data[i].date.toLowerCase()
+						}
+						if(check.includes(value)){
 							filteredData.push(data[i])
 						}
 					}
@@ -104,6 +127,7 @@
 										<td><a href="http://127.0.0.1:5000/${data[i].name}">${data[i].name}</a></td>
 										<td>${data[i].author}</td>
 										<td>${data[i].topic}</td>
+										<td>${data[i].views}</td>
 										<td>${data[i].reviews}</td>
 										<td>${data[i].date}</td>
 								</tr>`
