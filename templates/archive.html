@@ -93,13 +93,6 @@
 						console.log(myArray)
 					}
 				})
-				$('#search-input').on('keyup', function(){
-					var value = $(this).val()
-					var option_value = $('#search-option').val()
-					console.log('Value:', value)
-					var data = searchTable(value, myArray, option_value)
-					buildTable(data)
-				})
 				$('#search-option').on('keyup', function(){
 					var value = $(this).val()
 					var option_value = $('#search-option').val()

@@ -341,7 +341,9 @@ def a_published(article_name):
     text = functional.form_text(path)
     if action == "aproove":
         time = functional.get_current_date()
-        cursor.execute(f"UPDATE public.article_status SET status_id={3}, date='{time}' WHERE article_id={article_id}")
+        cursor.execute(f"UPDATE public.article_status SET status_id={3} WHERE article_id={article_id}")
+        cursor.execute(f"UPDATE public.article SET date='{time}' WHERE id={article_id}")
+        functional.form_read_colums(article_id)
         conn.commit()
         with open(f".\\reviews\\{article_name}.txt", "w") as file:
             file.write("")
@@ -350,7 +352,7 @@ def a_published(article_name):
     else:
         reason = request.form.get('reason')
         cursor.execute(f"UPDATE public.article_status SET status_id={4} WHERE article_id={article_id}")
-        cursor.execute(f"UPDATE public.article SET description='{reason}', isdeleted={True} WHERE id={article_id}")
+        cursor.execute(f"UPDATE public.article SET description='{reason}', isdeleted={True}, date='{time}' WHERE id={article_id}")
         conn.commit()
         return render_template('a_published.html', ban=ban, a=roles[0], m=roles[1], w=roles[2], new_publish=new_publish, title=title, text=text, denied=1)
 

@@ -297,7 +297,13 @@ def form_article(lines):
         #print(new_lines)
         return new_lines
 
-
+def form_read_colums(article_id):
+    cursor.execute(f"SELECT * FROM public.users")
+    records = list(cursor.fetchall())
+    for rec in records:
+        cursor.execute(f"INSERT INTO public.user_read (user_id, article_id, isread) VALUES ({rec[0]}, {article_id}, {False})")
+    conn.commit()
+    return 0
 
 """
 def form_reviews(article_id):
@@ -498,35 +504,36 @@ def select_reviews():
                 array += {'author': author, 'username': username, 'rate': rate, 'comment': review, 'date': date},
     return array
 
+#for selecting articles aprooved recently
 def select_table_recent():
-    current_date = get_current_date()
-    user_id = flask.session.get('user')
-    cursor.execute(f"SELECT * FROM public.article WHERE isdeleted={False}")
+    current_date = get_current_date() # get date
+    user_id = flask.session.get('user') # get user id
+    cursor.execute(f"SELECT * FROM public.article WHERE isdeleted={False}") # selecting all not deleted articles
     records = list(cursor.fetchall())
     array = []
     for rec in records:
-        article_id = rec[0]
-        name = rec[1]
-        date = rec[5]
-        cursor.execute(f"SELECT * FROM public.article_status WHERE article_id={article_id}")
+        article_id = rec[0] # get article id
+        name = rec[1] # get article name
+        date = rec[5] # get date of aprooving article
+        cursor.execute(f"SELECT * FROM public.article_status WHERE article_id={article_id}") # selecting articles's status
         check = list(cursor.fetchall())
-        cursor.execute(f"SELECT * FROM public.user_read WHERE user_id={user_id} and article_id={article_id}")
+        cursor.execute(f"SELECT * FROM public.user_read WHERE user_id={user_id} and article_id={article_id}") # checking which articles user has already read
         read_check = list(cursor.fetchall())
-        if check[0][1] == 3 and (read_check[0][2] != True or rec[5] == current_date):
-            cursor.execute(f"SELECT * FROM public.article_writer WHERE article_id={article_id}")
+        if check[0][1] == 3 and (read_check[0][2] != True or rec[5] == current_date): # checking if article is aprooved, if user read current article or article was aprooved today  
+            cursor.execute(f"SELECT * FROM public.article_writer WHERE article_id={article_id}") # selecting article's authors
             article_desc = list(cursor.fetchall())
             authors = ""
-            for log in article_desc:
+            for log in article_desc: # getting authors of article
                 cursor.execute(f"SELECT * FROM public.users WHERE id={log[1]}")
                 desc = list(cursor.fetchall())
                 authors += desc[0][3] + ", "
             authors=authors[0:len(authors)-2]
-            topic = get_topic(article_id)
-            reviews = get_rating(article_id)
+            topic = get_topic(article_id) # getting article's topic
+            reviews = get_rating(article_id) # getting article's rating 
             cursor.execute(f"SELECT * FROM public.user_read WHERE article_id={article_id} and isread={True}")
             views_check = list(cursor.fetchall())
-            views = len(views_check)
-            array += {'name': name, 'author': authors, 'topic': topic, 'views': views, 'reviews': reviews, 'date': date},
+            views = len(views_check) # getting article's views
+            array += {'name': name, 'author': authors, 'topic': topic, 'views': views, 'reviews': reviews, 'date': date}, # form array
     return array
         
 

@@ -64,6 +64,7 @@
 	<p>
 	    <input type="submit">
 	</p>
+	</form>
 		{% if username == "" %}
 		Username field can't be empty.
 		{% elif no_user == 1 %}
@@ -79,7 +80,7 @@
 		{% elif banned == 0 %}
 		<p>{{username}} is removed from ban list.</p>
 		{% endif %}
-
-    </form>
+    {% endif %}
+	
 </body>
 </html>
