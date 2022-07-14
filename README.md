@@ -96,7 +96,7 @@ Tables:
   (14) Сервер предоставляет информацию о новых одобренных статьях
      ![image](https://user-images.githubusercontent.com/90326938/179022498-f77ab0ea-5334-4c16-94ec-85e13e3e9840.png)
      ![image](https://user-images.githubusercontent.com/90326938/179020691-2685a10c-b50b-45e9-bd78-0a2369b473b8.png)
-  (15) Сервер поддерживает возможность поиска по названию статьи, авторам, дате публикации,
+  (15) Сервер поддерживает возможность поиска по названию статьи, авторам, дате публикации, содержанию (topic)
      ![image](https://user-images.githubusercontent.com/90326938/179023655-645b554e-e3b1-42cd-9896-caf615d0c75d.png)
      ![image](https://user-images.githubusercontent.com/90326938/179023428-5cca40e2-6ca4-4e76-9d9f-cf81056bfae3.png)
 
