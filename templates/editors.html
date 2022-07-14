@@ -31,20 +31,19 @@
 		<h1>You are banned on the Server!</h1>
 		{% else %}
         <ul class="nav">
-		<a href="http://127.0.0.1:5000/home">Home</a>
-		<a href="http://127.0.0.1:5000/archive">All articles</a>
-        {% if a == 1 %}
-		<a href="http://127.0.0.1:5000/role">Role</a>
-		{% endif %}
-		{% if w == 1 or a == 1 %}
-		<a href="http://127.0.0.1:5000/workshop">Write article</a>
-		{% endif %}
-		{% if m == 1 or a == 1 %}
-		<a href="http://127.0.0.1:5000/published">Published articles{{new_publish}}</a>
-		{% endif %}
-		<a href="http://127.0.0.1:5000/signin">Log out</a>
-		{% endif %}
-        </ul>
+				<a href="https://127.0.0.1:5000/home">Home</a>
+				<a href="https://127.0.0.1:5000/archive">All articles</a>
+				{% if a == 1 %}
+					<a href="https://127.0.0.1:5000/role">Role</a>
+				{% endif %}
+				{% if w == 1 or a == 1 %}
+					<a href="https://127.0.0.1:5000/workshop">Write article</a>
+				{% endif %}
+				{% if m == 1 or a == 1 %}
+					<a href="https://127.0.0.1:5000/published">Published articles{{new_publish}}</a>
+				{% endif %}
+				<a href="https://127.0.0.1:5000/signin">Log out</a>
+			</ul>
 		<form action="" method="post" autocomplete="off">
 		<p>
 			<label for="editor">Write username of new editor:</label>

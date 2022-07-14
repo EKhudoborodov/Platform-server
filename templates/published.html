@@ -36,18 +36,18 @@
 			<h1>You are banned on the Server!</h1>
 		{% else %}
 			<ul class="nav">
-				<a href="http://127.0.0.1:5000/home">Home</a>
-				<a href="http://127.0.0.1:5000/archive">All articles</a>
+				<a href="https://127.0.0.1:5000/home">Home</a>
+				<a href="https://127.0.0.1:5000/archive">All articles</a>
 				{% if a == 1 %}
-					<a href="http://127.0.0.1:5000/role">Role</a>
+					<a href="https://127.0.0.1:5000/role">Role</a>
 				{% endif %}
 				{% if w == 1 or a == 1 %}
-					<a href="http://127.0.0.1:5000/workshop">Write article</a>
+					<a href="https://127.0.0.1:5000/workshop">Write article</a>
 				{% endif %}
 				{% if m == 1 or a == 1 %}
-					<a href="http://127.0.0.1:5000/published">Published articles{{new_publish}}</a>
+					<a href="https://127.0.0.1:5000/published">Published articles{{new_publish}}</a>
 				{% endif %}
-				<a href="http://127.0.0.1:5000/signin">Log out</a>
+				<a href="https://127.0.0.1:5000/signin">Log out</a>
 			</ul>
 			<div class="row">
 				<div class="col">
@@ -73,7 +73,7 @@
 				]
 				$.ajax({
 					method:'GET',
-					url:'http://127.0.0.1:5000/data',
+					url:'https://127.0.0.1:5000/data',
 					success:function(response){
 						myArray = response.published
 						buildTable(myArray)
@@ -102,7 +102,7 @@
 					table.innerHTML = ''
 					for (var i = 0; i < data.length; i++){
 						var row = `<tr>
-										<td><a href="http://127.0.0.1:5000/published/${data[i].name}">${data[i].name}</a></td>
+										<td><a href="https://127.0.0.1:5000/published/${data[i].name}">${data[i].name}</a></td>
 										<td>${data[i].author}</td>
 										<td>${data[i].topic}</td>
 										<td>${data[i].views}</td>

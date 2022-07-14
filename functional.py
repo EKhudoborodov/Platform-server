@@ -242,6 +242,7 @@ def is_author(article_id, user_id):
     else:
         return 0
 
+"""
 def workshop_check(user_id, roles, no_article):
     new_publish = f"({check_writer_uploads()})"
     ban = flask.session.get('ban')
@@ -266,7 +267,9 @@ def workshop_check(user_id, roles, no_article):
                     break
             else:
                 break
-        return flask.render_template('workshop.html', ban=ban, a=roles[0], m=roles[1], w=roles[2], first=first, second=second, third=third, new_publish=new_publish, no_article=no_article)
+        return flask.render_template('workshop.html', ban=ban, a=roles[0], m=roles[1], w=roles[2], new_publish=new_publish, no_article=no_article)
+"""
+
 
 #FORM
 def form_text(path):
@@ -349,9 +352,9 @@ def get_rating(article_id):
     for log in rating_desc:
         count += log[4]
     if count!=0:
-        reviews = count/len(rating_desc)
+        reviews = round(count/len(rating_desc), 1)
     else:
-        reviews='-'
+        reviews = '-'
     return reviews
 
 def get_current_date():
