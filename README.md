@@ -55,18 +55,22 @@ Tables:
 
 # Код и реализация
   (1) Регистрация и авторизация пользователей
-     ![image](https://user-images.githubusercontent.com/90326938/177948873-16ff00e7-bc34-4cca-bdb8-41537bc13d57.png)
-     ![image](https://user-images.githubusercontent.com/90326938/177949760-cc1f28ff-1b08-4fae-b61a-55e9a11fba52.png) ![image](https://user-images.githubusercontent.com/90326938/177949852-fbfd8d2e-b47b-4018-bae1-a7f209d1df62.png)
+     ![image](https://user-images.githubusercontent.com/90326938/179018037-c7efa64e-a129-40d0-ba33-ce2baa538ccc.png)
+     ![image](https://user-images.githubusercontent.com/90326938/179017652-8934becd-cce7-480d-b5de-137716d524f5.png)
+     ![image](https://user-images.githubusercontent.com/90326938/179018137-20f9d5e9-8890-4df5-b3f1-284a0ea57729.png)
+     ![image](https://user-images.githubusercontent.com/90326938/179017863-61238389-012f-4a9d-88f1-fcfbfea280cf.png)
   (2) Разграничение по ролям (При переходе на любую страничку идёт проверка ролей пользователя, если у пользователя нет роли, необходимой 
      для просмотра страницы, его вернёт на начальную страницу; (5) у одного пользователя может быть несколько ролей)
-     ![image](https://user-images.githubusercontent.com/90326938/177949216-e318f98c-fdb4-4aa7-a456-2c348a64d731.png)
-     ![image](https://user-images.githubusercontent.com/90326938/177955919-8b8b9f40-a674-43ad-b018-4143c7df54b3.png)
+     ![image](https://user-images.githubusercontent.com/90326938/179023193-c39c8955-b480-4086-96d5-f0196d9ec39e.png)
+     ![image](https://user-images.githubusercontent.com/90326938/179023040-9c6ca228-05f2-4c14-89df-c083a2b00582.png)
   (3) Статья, может находиться в состоянии "Черновик" (6) с возможностью редактирования на сайте
      ![image](https://user-images.githubusercontent.com/90326938/177950937-b0d5f397-900b-402e-be14-55662253ae9d.png)
      ![image](https://user-images.githubusercontent.com/90326938/177952557-9ea4197a-c9b1-49b6-9864-8149b61a14f8.png)
      В состоянии "Опубликована" - модератор или администратор могут одобрить статьтю или отклонить
      ![image](https://user-images.githubusercontent.com/90326938/177951372-21ddfba6-25cd-4797-bd24-361a867e13e8.png)
-     ![image](https://user-images.githubusercontent.com/90326938/177953548-8e13dde1-1b6a-42dd-b8f6-0029e08e366b.png)
+     ![image](https://user-images.githubusercontent.com/90326938/179020206-a606bc38-f77f-42ae-a1cf-84e47be058cf.png)
+     ![image](https://user-images.githubusercontent.com/90326938/179022707-ae329930-458b-4a84-8d2b-ba58a48a8046.png)
+     ![image](https://user-images.githubusercontent.com/90326938/179020492-ed058b4b-2fb4-4385-9ebb-9fccd67c2125.png)
      В состоянии "Одобрена" - одобренные статьи отображаются на главной странице
      ![image](https://user-images.githubusercontent.com/90326938/177953823-e9cad57b-d7c2-4955-8f9d-8bb1b0eb6a2c.png)
      ![image](https://user-images.githubusercontent.com/90326938/177953945-75d67462-f361-472f-be0a-3e24b84762de.png)
@@ -83,12 +87,18 @@ Tables:
      ![image](https://user-images.githubusercontent.com/90326938/177957248-4200885a-ee2a-4452-adad-fdc81a1cfd90.png)
   (8) Авторы и редакторы не могут редактировать опубликованную статью
      ![image](https://user-images.githubusercontent.com/90326938/177957692-c86dbd85-d2f8-4afe-9823-3ebab2d5769e.png)
+  (10) Сайт работает по протоколу https
+     ![image](https://user-images.githubusercontent.com/90326938/179017214-4715c820-4901-4954-ac86-75a58e62d3d2.png)
+     ![image](https://user-images.githubusercontent.com/90326938/179017524-d1e2963f-d2c7-4be1-bec5-a51fcd7d4bd6.png)
   (13) Сервер поддерживает возможность оценки статей
      ![image](https://user-images.githubusercontent.com/90326938/177958197-a03250d1-4c33-4e74-a898-e9c4ecad4f48.png)
      ![image](https://user-images.githubusercontent.com/90326938/177958363-4d9563f0-d0f1-4fb9-8498-07f7436d3444.png)
-  (15) Сервер поддерживает возможность поиска по названию статьи
-     ![image](https://user-images.githubusercontent.com/90326938/177961182-a7a56997-6035-4edb-8c4d-ad10d8c223b3.png)
-     ![image](https://user-images.githubusercontent.com/90326938/177960180-b5e42f56-ce82-4cbb-bb70-53c89a80e457.png)
+  (14) Сервер предоставляет информацию о новых одобренных статьях
+     ![image](https://user-images.githubusercontent.com/90326938/179022498-f77ab0ea-5334-4c16-94ec-85e13e3e9840.png)
+     ![image](https://user-images.githubusercontent.com/90326938/179020691-2685a10c-b50b-45e9-bd78-0a2369b473b8.png)
+  (15) Сервер поддерживает возможность поиска по названию статьи, авторам, дате публикации,
+     ![image](https://user-images.githubusercontent.com/90326938/179023655-645b554e-e3b1-42cd-9896-caf615d0c75d.png)
+     ![image](https://user-images.githubusercontent.com/90326938/179023428-5cca40e2-6ca4-4e76-9d9f-cf81056bfae3.png)
 
 
 
