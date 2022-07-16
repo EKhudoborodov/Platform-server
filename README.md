@@ -95,10 +95,10 @@ Tables:
      ![image](https://user-images.githubusercontent.com/90326938/177958363-4d9563f0-d0f1-4fb9-8498-07f7436d3444.png)
   (14) Сервер предоставляет информацию о новых одобренных статьях
      ![image](https://user-images.githubusercontent.com/90326938/179022498-f77ab0ea-5334-4c16-94ec-85e13e3e9840.png)
-     ![image](https://user-images.githubusercontent.com/90326938/179020691-2685a10c-b50b-45e9-bd78-0a2369b473b8.png)
-  (15) Сервер поддерживает возможность поиска по названию статьи, авторам, дате публикации, содержанию (topic)
-     ![image](https://user-images.githubusercontent.com/90326938/179023655-645b554e-e3b1-42cd-9896-caf615d0c75d.png)
-     ![image](https://user-images.githubusercontent.com/90326938/179023428-5cca40e2-6ca4-4e76-9d9f-cf81056bfae3.png)
+     ![image](https://user-images.githubusercontent.com/90326938/179355554-d0f58713-6ec8-4202-80bb-0f2960b23d12.png)
+  (15) Сервер поддерживает возможность поиска по названию статьи, авторам, дате публикации, содержанию (topic); Присутствуют фильтры рейтинга и количества просмотров.
+     ![image](https://user-images.githubusercontent.com/90326938/179355640-8ca8afba-7984-426b-9d21-f636846c5f56.png)
+     ![image](https://user-images.githubusercontent.com/90326938/179355583-c400afa5-bc65-4d5d-af31-34affec0718b.png)
 
 
 
