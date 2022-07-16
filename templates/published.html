@@ -52,7 +52,16 @@
 			<div class="row">
 				<div class="col">
 					<div class="card card-body">
-						<input id="search-input" class="form-control" type="text">
+						<p>
+							<input id="search-input" class="form-control" type="text">
+						</p><p>
+							<select id="search-option" class="form-control">
+								<option value="name">Article's name</option>
+								<option value="author">Article's authors</option>
+								<option value="topic">Article's topic</option>
+								<option value="date">Date of publication</option>
+							</select>
+						</p>
 					</div>
 				</div>
 			</div>
@@ -82,16 +91,28 @@
 				})
 				$('#search-input').on('keyup', function(){
 					var value = $(this).val()
+					var option_value = $('#search-option').val()
 					console.log('Value:', value)
-					var data = searchTable(value, myArray)
+					var data = searchTable(value, myArray, option_value)
 					buildTable(data)
 				})
-				function searchTable(value, data){
+				function searchTable(value, data, option_value){
 					var filteredData = []
 					for (var i = 0; i < data.length; i++){
 						value = value.toLowerCase()
-						var name = data[i].name.toLowerCase()
-						if(name.includes(value)){
+						if(option_value == "name"){
+							var check = data[i].name.toLowerCase()
+						}
+						else if(option_value == "topic"){
+							var check = data[i].topic.toLowerCase()
+						} 
+						else if (option_value == "author"){
+							var check = data[i].author.toLowerCase()
+						}
+						else if (option_value == "date"){
+							var check = data[i].date.toLowerCase()
+						}
+						if(check.includes(value)){
 							filteredData.push(data[i])
 						}
 					}

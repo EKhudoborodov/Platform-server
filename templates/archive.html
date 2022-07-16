@@ -59,13 +59,26 @@
 								<option value="name">Article's name</option>
 								<option value="author">Article's authors</option>
 								<option value="topic">Article's topic</option>
-								<option value="views">Number of views</option>
-								<option value="rate">Article's rate</option>
 								<option value="date">Date of publication</option>
 							</select>
-						</p><p id="additional-option">
-							
+						</p><p>
+							Rate:<select id="rate-filter" class="form-control">
+								<option value="no">No filter</option>
+								<option value="1">1</option>
+								<option value="2">2</option>
+								<option value="3">3</option>
+								<option value="4">4</option>
+								<option value="5">5</option>
+							</select>
+						</p><p>
+							Views:<select id="views-filter" class="form-control">
+								<option value="no">No filter</option>
+								<option value="u10">>10</option>
+								<option value="u100">>100</option>
+								<option value="u500">>500</option>
+							</select>
 						</p>
+						
 					</div>
 				</div>
 			</div>
@@ -93,39 +106,86 @@
 						console.log(myArray)
 					}
 				})
-				$('#search-option').on('keyup', function(){
+				$('#search-input').on('keyup', function(){
 					var value = $(this).val()
 					var option_value = $('#search-option').val()
+					var rate_value = $('#rate-filter').val()
+					var views_value = $('#views-filter').val()
 					console.log('Value:', value)
-					var data = searchTable(value, myArray, option_value)
+					var data = searchTable(value, myArray, option_value, rate_value, views_value)
 					buildTable(data)
 				})
-				function searchTable(value, data, option_value){
+				$('#rate-filter').on('click', function(){
+					var value = $('#search-input').val()
+					var option_value = $('#search-option').val()
+					var rate_value = $(this).val()
+					var views_value = $('#views-filter').val()
+					console.log('Value:', value)
+					var data = searchTable(value, myArray, option_value, rate_value, views_value)
+					buildTable(data)
+				})
+				$('#views-filter').on('click', function(){
+					var value = $('#search-input').val()
+					var option_value = $('#search-option').val()
+					var rate_value = $('#rate-filter').val()
+					var views_value = $(this).val()
+					console.log('Value:', value)
+					var data = searchTable(value, myArray, option_value, rate_value, views_value)
+					buildTable(data)
+				})
+				function searchTable(value, data, option_value, rate_value, views_value){
 					var filteredData = []
 					for (var i = 0; i < data.length; i++){
 						value = value.toLowerCase()
-						if (option_value == "rate"){
-							var check = data[i].reviews
+						var rate_check = 0
+						var views_check = 0
+						var rate = 0
+						var views = 0
+						if(rate_value == "1"){
+							rate_check = 1
+							rate = 1
 						}
-						else if (option_value == "views"){
-							var check = data[i].views
+						else if(rate_value == "2"){
+							rate_check = 1
+							rate = 2
 						}
-						else {
-							if(option_value == "name"){
-								var check = data[i].name.toLowerCase()
-							}
-							else if(option_value == "topic"){
-								var check = data[i].topic.toLowerCase()
-							} 
-							else if (option_value == "author"){
-								var check = data[i].author.toLowerCase()
-							}
-							else if (option_value == "date"){
-								var check = data[i].date.toLowerCase()
-							}
-							
+						else if(rate_value == "3"){
+							rate_check = 1
+							rate = 3
 						}
-						if(check.includes(value)){
+						else if(rate_value == "4"){
+							rate_check = 1
+							rate = 4
+						}
+						else if(rate_value == "5"){
+							rate_check = 1
+							rate = 5
+						}
+						if(views_value == "u10"){
+							views_check = 1
+							views = 10
+						}
+						else if(views_value == "u100"){
+							views_check = 1
+							views = 100
+						}
+						else if(views_value == "u500"){
+							views_check = 1
+							views = 500
+						}
+						if(option_value == "name"){
+							var check = data[i].name.toLowerCase()
+						}
+						else if(option_value == "topic"){
+							var check = data[i].topic.toLowerCase()
+						} 
+						else if (option_value == "author"){
+							var check = data[i].author.toLowerCase()
+						}
+						else if (option_value == "date"){
+							var check = data[i].date.toLowerCase()
+						}
+						if((check.includes(value)) && (((rate <= data[i].reviews) && ((rate+1) > data[i].reviews)) || (rate_check == 0)) && ((data[i].views >= views) || (views_check == 0))){
 							filteredData.push(data[i])
 						}
 					}

@@ -360,7 +360,7 @@ def get_rating(article_id):
     if count!=0:
         reviews = round(count/len(rating_desc), 1)
     else:
-        reviews = '-'
+        reviews = 0
     return reviews
 
 def get_current_date():
